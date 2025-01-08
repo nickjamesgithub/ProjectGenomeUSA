@@ -9,8 +9,8 @@ import numpy as np
 mapping_data = pd.read_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\Company_list_GPT_SP500.csv")
 wacc_store = pd.read_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\WACC_inputs\WACC_Store_2011_2024.csv")
 
-full_ticker_list = ticker_list = mapping_data["Full Ticker"].values
-ticker_slice_list = ticker_list = mapping_data["Ticker"].values
+full_ticker_list = mapping_data["Full Ticker"].values
+ticker_slice_list = mapping_data["Ticker"].values
 
 for i in range(len(full_ticker_list)):
     try:
@@ -226,7 +226,8 @@ for i in range(len(full_ticker_list)):
         # Add company name, sector & ticker
         df_transpose["Company_name"] = mapping_data.loc[mapping_data["Full Ticker"] == full_ticker_list[i]]["Company name"].values[0]
         df_transpose["Sector"] = mapping_data.loc[mapping_data["Full Ticker"] == full_ticker_list[i]]["Sector_new"].values[0]
-        df_transpose["Ticker"] = full_ticker_list[i]
+        df_transpose["Ticker_full"] = full_ticker_list[i]
+        df_transpose["Ticker"] = ticker_slice_list[i]
         # Create a year column
         df_transpose["Year"] = pd.to_datetime(df_transpose.index).year
         # Dividend per share
