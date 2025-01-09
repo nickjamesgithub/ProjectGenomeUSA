@@ -24,7 +24,7 @@ mapping_data = pd.read_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Geno
 tickers_ = mapping_data.loc[mapping_data["Sector_new"].isin(sector)]["Ticker"].values
 
 # List of year
-year_lb = 2011
+year_lb = 2010
 year_ub = 2024
 year_grid = np.linspace(year_lb, year_ub, year_ub-year_lb+1)
 

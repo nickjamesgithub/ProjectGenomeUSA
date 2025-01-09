@@ -54,8 +54,8 @@ company_labels_list = []
 tickers_list_survive = []
 for i in range(len(tickers_)):
     # Get dimensions for company i in range 2017-2023
-    tickers = df_merge.loc[(df_merge["Ticker"]==tickers_full[i]) & (df_merge["Year"]>=2017) & (df_merge["Year"]<=2023)]
-    firefly_attributes = tickers[["Company_name", "Ticker", "Year", "EP/FE", "Revenue_growth_3_f", "TSR", "Dividend_Buyback_Yield", "PE_Implied", "WACC_Damodaran", "ROTE", "ROA", "ROFE", "ROCE"]]
+    tickers = df_merge.loc[(df_merge["Ticker_full"]==tickers_full[i]) & (df_merge["Year"]>=2017) & (df_merge["Year"]<=2023)]
+    firefly_attributes = tickers[["Company_name", "Ticker_full", "Year", "EP/FE", "Revenue_growth_3_f", "TSR", "Dividend_Buyback_Yield", "PE_Implied", "WACC_Damodaran", "ROTE", "ROA", "ROFE", "ROCE"]]
     ep_fe = tickers["EP/FE"]
     rev_growth = tickers["Revenue_growth_3_f"]
     if ep_fe.isna().sum() == 0 and rev_growth.isna().sum() == 0 and len(ep_fe) == 7 and len(rev_growth) == 7:
@@ -115,7 +115,7 @@ cluster_labels_even = get_even_clusters(affinity_master, (len(affinity_master)/n
 # Add labels to Firefly dataframe
 firefly_cluster_df_lists = []
 for i in range(len(tickers_list_survive)):
-    company_i = firefly_df.loc[firefly_df["Ticker"]==tickers_list_survive[i]]
+    company_i = firefly_df.loc[firefly_df["Ticker_full"]==tickers_list_survive[i]]
     company_i["Cluster_label"] = cluster_labels_even[i]
     firefly_cluster_df_lists.append(company_i)
 
@@ -126,15 +126,15 @@ firefly_cluster_df_merge.replace([np.inf, -np.inf], np.nan, inplace=True)
 # Write to CSV file
 firefly_cluster_df_merge.to_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\USA_Journey_clusters.csv")
 
-for i in range(0,num_clusters):
-    # Select cluster of interest
-    cluster_i = firefly_cluster_df_merge.loc[firefly_cluster_df_merge["Cluster_label"]==i]
-
-    # Group the DataFrame by 'Year' and compute the mean for each metric excluding non-numeric columns
-    numeric_columns = cluster_i.select_dtypes(include=[np.number]).columns
-    grouped_df = cluster_i.groupby('Year')[numeric_columns].median()
-
-    # Firefly plot
-    firefly_plot(grouped_df["Year"], grouped_df["Revenue_growth_3_f"], grouped_df["EP/FE"], "cluster "+str(i+1))
-    print("Cluster ", str(i), " Revenue growth ", grouped_df["Revenue_growth_3_f"].median(), " EP/FE ",  grouped_df["EP/FE"].median())
+# for i in range(0,num_clusters):
+#     # Select cluster of interest
+#     cluster_i = firefly_cluster_df_merge.loc[firefly_cluster_df_merge["Cluster_label"]==i]
+#
+#     # Group the DataFrame by 'Year' and compute the mean for each metric excluding non-numeric columns
+#     numeric_columns = cluster_i.select_dtypes(include=[np.number]).columns
+#     grouped_df = cluster_i.groupby('Year')[numeric_columns].median()
+#
+#     # Firefly plot
+#     firefly_plot(grouped_df["Year"], grouped_df["Revenue_growth_3_f"], grouped_df["EP/FE"], "cluster "+str(i+1))
+#     print("Cluster ", str(i), " Revenue growth ", grouped_df["Revenue_growth_3_f"].median(), " EP/FE ",  grouped_df["EP/FE"].median())
 

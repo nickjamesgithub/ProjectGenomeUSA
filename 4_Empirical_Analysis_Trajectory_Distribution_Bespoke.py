@@ -141,7 +141,7 @@ tickers_ = mapping_data.loc[mapping_data["Sector_new"].isin(sector)]["Ticker"].v
 if sp_500:
     dfs_list = []
     for i in range(len(tickers_)):
-        idx, company_i = tickers_[i].split(":")
+        company_i = tickers_[i]
         try:
             df = pd.read_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\USA_platform_data\_" + company_i + ".csv")
             dfs_list.append(df)

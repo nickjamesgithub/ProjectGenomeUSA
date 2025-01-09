@@ -13,9 +13,7 @@ make_plots = True
 
 # Apply Genome Filter
 genome_filtering = True
-top_100_companies = False
-asx_100 = False
-asx_200 = True
+sp_500 = True
 
 # Market capitalisation threshold
 mcap_threshold = 500
@@ -50,7 +48,7 @@ year_grid = np.linspace(beginning_year, end_year, end_year-beginning_year+1)
 rolling_window = 3
 
 # Import data
-mapping_data = pd.read_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\company_list_asx200_.csv")
+mapping_data = pd.read_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\Company_list_GPT_SP500.csv")
 
 # Get unique tickers
 unique_tickers = mapping_data["Ticker"].unique()
@@ -61,36 +59,16 @@ sector = mapping_data["Sector_new"].values
 # Required tickers
 tickers_ = mapping_data.loc[mapping_data["Sector_new"].isin(sector)]["Ticker"].values
 
-if asx_200:
+if sp_500:
     dfs_list = []
     for i in range(len(tickers_)):
         company_i = tickers_[i]
         try:
-            df = pd.read_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\platform_data\_" + company_i + ".csv")
+            df = pd.read_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\USA_platform_data\_" + company_i + ".csv")
             dfs_list.append(df)
             print("Company data ", company_i)
         except:
             print("Error with company ", company_i)
-
-if asx_100:
-    # Directory containing the CSV files
-    directory_path = r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\Empirical_analysis\ASX100_data"
-    # List to store the dataframes
-    dfs_list = []
-    # Get all CSV files in the directory
-    csv_files = glob.glob(os.path.join(directory_path, "*.csv"))
-
-    # Read each CSV file and append to dfs_list
-    for csv_file in csv_files:
-        try:
-            df = pd.read_csv(csv_file)
-            dfs_list.append(df)
-            # print(f"Successfully read {os.path.basename(csv_file)}")
-        except Exception as e:
-            print(f"Error reading {os.path.basename(csv_file)}: {e}")
-
-    # Optionally, print the list of successfully read dataframes
-    print(f"Total files read: {len(dfs_list)}")
 
 
 # Merge dataframes
@@ -98,14 +76,6 @@ df_concat = pd.concat(dfs_list)
 df_merge = generate_genome_classification_df(df_concat)
 # Create feature for Price-to-book
 df_merge["Price_to_Book"] = df_merge["Market_Capitalisation"]/df_merge["Book_Value_Equity"]
-
-if top_100_companies:
-    # Assuming df is your DataFrame
-    df_merge = df_merge.groupby('Company_name').filter(lambda x: x['Market_Capitalisation'].min() >= mcap_threshold)
-    df_unique_companies = pd.DataFrame(df_merge["Company_name"].unique())
-    # Write to csv file
-    df_merge.to_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\casework\CSL\Filtered_data\ASX_filtered_data.csv")
-    df_unique_companies.to_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\casework\CSL\Filtered_data\ASX_filtered_peers.csv")
 
 
 # Initial: Year, Genome Segment, Sectors

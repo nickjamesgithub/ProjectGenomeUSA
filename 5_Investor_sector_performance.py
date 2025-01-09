@@ -49,7 +49,7 @@ year_grid = np.linspace(beginning_year, end_year, end_year-beginning_year+1)
 rolling_window = 3
 
 # Import data
-mapping_data = pd.read_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\company_list_asx200_.csv")
+mapping_data = pd.read_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\Company_list_GPT_SP500.csv")
 
 # Get unique tickers
 unique_tickers = mapping_data["Ticker"].unique()
@@ -64,7 +64,7 @@ dfs_list = []
 for i in range(len(tickers_)):
     company_i = tickers_[i]
     try:
-        df = pd.read_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\Capiq_data\_" + company_i + ".csv")
+        df = pd.read_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\USA_platform_data\_" + company_i + ".csv")
         dfs_list.append(df)
         print("Company data ", company_i)
     except:
@@ -124,10 +124,10 @@ axes[1, 0].legend()
 
 # Subplot 4: Scatter plot with regression line of EP/FE vs TSR_CIQ_no_buybacks (5th - 95th Percentile)
 # Calculate percentiles
-lower_percentile_epfe = df_merge['EP/FE'].quantile(0.05)
-upper_percentile_epfe = df_merge['EP/FE'].quantile(0.95)
-lower_percentile_tsr = df_merge['TSR_CIQ_no_buybacks'].quantile(0.05)
-upper_percentile_tsr = df_merge['TSR_CIQ_no_buybacks'].quantile(0.95)
+lower_percentile_epfe = df_merge['EP/FE'].quantile(0.1)
+upper_percentile_epfe = df_merge['EP/FE'].quantile(0.9)
+lower_percentile_tsr = df_merge['TSR_CIQ_no_buybacks'].quantile(0.01)
+upper_percentile_tsr = df_merge['TSR_CIQ_no_buybacks'].quantile(0.9)
 
 # Filter data within percentiles
 df_filtered_percentile = df_merge[
@@ -201,10 +201,10 @@ axes[1, 0].legend()
 
 # Subplot 4: Scatter plot with regression line of Revenue_growth_3_f vs TSR_CIQ_no_buybacks (5th - 95th Percentile)
 # Calculate percentiles
-lower_percentile_revenue = df_merge['Revenue_growth_3_f'].quantile(0.05)
-upper_percentile_revenue = df_merge['Revenue_growth_3_f'].quantile(0.95)
-lower_percentile_tsr = df_merge['TSR_CIQ_no_buybacks'].quantile(0.05)
-upper_percentile_tsr = df_merge['TSR_CIQ_no_buybacks'].quantile(0.95)
+lower_percentile_revenue = df_merge['Revenue_growth_3_f'].quantile(0.1)
+upper_percentile_revenue = df_merge['Revenue_growth_3_f'].quantile(0.9)
+lower_percentile_tsr = df_merge['TSR_CIQ_no_buybacks'].quantile(0.1)
+upper_percentile_tsr = df_merge['TSR_CIQ_no_buybacks'].quantile(0.9)
 
 # Filter data within percentiles
 df_filtered_percentile = df_merge[

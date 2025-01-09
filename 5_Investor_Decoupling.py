@@ -9,7 +9,7 @@ from scipy.stats import linregress
 matplotlib.use('TkAgg')
 
 # Import data
-mapping_data = pd.read_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\company_list_asx200.csv")
+mapping_data = pd.read_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\Company_list_GPT_SP500.csv")
 
 # Get unique tickers
 unique_tickers = mapping_data["Ticker"].unique()
@@ -24,7 +24,7 @@ dfs_list = []
 for i in range(len(tickers_)):
     company_i = tickers_[i]
     try:
-        df = pd.read_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\Capiq_data\_" + company_i + ".csv")
+        df = pd.read_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\_" + company_i + ".csv")
         dfs_list.append(df)
         print("Company data ", company_i)
     except:
@@ -125,6 +125,6 @@ for ticker in range(len(tickers_)):
 # Write to CSV file
 master_df = pd.DataFrame(master_df_list)
 master_df.columns = ["Company_name", "Ticker", "Sector", "Return_alpha", "Return_beta", "Growth_alpha", "Growth_beta"]
-master_df.to_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\Decoupling_script.csv")
+master_df.to_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\USA_Decoupling_script.csv")
 
 

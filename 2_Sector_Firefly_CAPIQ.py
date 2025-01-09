@@ -11,8 +11,8 @@ This is a tool to compute en evolutionary Firefly at the sector level (bespoke)
 """
 
 # Choose sector
-sector_list = ["Technology"]
-plot_title = "USA_Technology_Firefly"
+sector_list = ["Industrials"]
+plot_title = "USA_Industrials_Firefly"
 
 # Import data
 mapping_data = pd.read_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\Company_list_GPT_SP500.csv")
@@ -52,7 +52,7 @@ for i in range(len(tickers_)):
 df_merged = pd.concat(df_list, axis=0)
 
 # List of year
-year_lb = 2014
+year_lb = 2015
 year_ub = 2023
 year_grid = np.linspace(year_lb, year_ub, year_ub - year_lb + 1)
 

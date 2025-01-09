@@ -6,7 +6,7 @@ import matplotlib
 matplotlib.use('TkAgg')
 
 # Import data
-mapping_data = pd.read_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\company_list_asx200.csv")
+mapping_data = pd.read_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\Company_list_GPT_SP500.csv")
 # Choose sectors to include
 sector = mapping_data["Sector_new"].values
 
@@ -17,7 +17,7 @@ dfs_list = []
 for i in range(len(tickers_)):
     company_i = tickers_[i]
     try:
-        df = pd.read_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\Capiq_data\_"+company_i+".csv")
+        df = pd.read_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\USA_platform_data\_"+company_i+".csv")
         dfs_list.append(df)
         print("Company data ", company_i)
     except:

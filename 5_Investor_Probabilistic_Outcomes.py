@@ -10,7 +10,7 @@ matplotlib.use('TkAgg')
 Genome_filter = True
 
 # Read the data
-df = pd.read_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\Journeys_summary.csv")
+df = pd.read_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\USA_Journeys_summary.csv")
 
 if Genome_filter:
     df = df.loc[(df["EP/FE_end"] >= -.3) & (df["EP/FE_end"] <= .5) &

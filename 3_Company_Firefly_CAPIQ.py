@@ -9,8 +9,8 @@ matplotlib.use('TkAgg')
 from sklearn.cluster import KMeans
 
 # Company name
-company_list = ["NVDA:"] #"MSFT:", "NVDA:", "TSLA:", "AMZN:", "GOOG:", "NFLX:", "META:"
-plot_label = "NVIDIA" # company[:3]
+company_list = ["MSFT:"] #"MSFT:", "NVDA:", "TSLA:", "AMZN:", "GOOG:", "NFLX:", "META:"
+plot_label = "Microsoft" # company[:3]
 
 x_axis_list = []
 y_axis_list = []

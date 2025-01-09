@@ -7,9 +7,9 @@ matplotlib.use('TkAgg')
 from sklearn.cluster import KMeans
 
 # Import data & slice specific company
-company_slice = pd.read_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\Capiq_data\_CSL.csv")
-company_list = ["CSL"]
-plot_label = "CSL_projected_firefly"
+company_slice = pd.read_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\USA_platform_data\_AAPL.csv")
+company_list = ["AAPL"]
+plot_label = "AAPL_projected_firefly"
 scenario = "N/A" # north, east, north_east
 
 # Current 2023 Financials

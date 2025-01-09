@@ -23,8 +23,8 @@ mapping_data = pd.read_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Geno
 tickers_ = mapping_data.loc[mapping_data["Sector_new"].isin(sector)]["Ticker"].values
 
 # List of year
-year_lb = 2011
-year_ub = 2023
+year_lb = 2010
+year_ub = 2024
 year_grid = np.linspace(year_lb, year_ub, year_ub-year_lb+1)
 
 tsr_list = []
@@ -34,7 +34,7 @@ for i in range(len(tickers_)):
         print("Iteration ", tickers_[i])
         company_i = tickers_[i]
         # Standard data
-        df = pd.read_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\Capiq_data\_"+company_i+".csv")
+        df = pd.read_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\USA_platform_data\_"+company_i+".csv")
         # Append TSR
         tsr = df["TSR_CIQ_no_buybacks"]
         tsr_list.append(tsr)
