@@ -339,6 +339,31 @@ for i in range(len(full_ticker_list)):
         # Returns above Cost of Equity
         df_transpose["ROTE_above_Cost_of_equity"] = df_transpose["ROTE"] - df_transpose["Cost of Equity"]
 
+        ### BESPOKE ECONOMIC PROFIT CALCULATIONS ###
+
+        # Create Economic Profit Value
+        df_transpose['EVA_bespoke'] = np.where(
+            df_transpose['Sector'].isin(['Banking', 'Insurance', "Investment and Wealth", "Financials - other"]),
+            df_transpose['CROTE'],
+            df_transpose['Economic_profit']
+        )
+
+        # Create Economic Profit Ratio
+        df_transpose['EVA_ratio_bespoke'] = np.where(
+            df_transpose['Sector'].isin(['Banking', 'Insurance', "Investment and Wealth", "Financials - other"]),
+            df_transpose['CROTE_TE'],
+            df_transpose['EP/FE']
+        )
+
+        # Compute EVA Margin
+        df_transpose["EVA_Margin"] = df_transpose["EVA_bespoke"] / df_transpose["Revenue"]
+        # Calculate the first difference of the 'EVA_bespoke' column
+        df_transpose['EVA_bespoke_diff'] = df_transpose['EVA_bespoke'].diff()
+        # Create 'EVA_momentum' by dividing the difference by 'Revenue'
+        df_transpose['EVA_momentum'] = df_transpose['EVA_bespoke_diff'] / df_transpose['Revenue']
+        # Create 'EVA_shock' - Change in EVA Momentum
+        df_transpose['EVA_shock'] = df_transpose['EVA_momentum'].diff()
+
         # Slice years for specific company
         unique_years = np.sort(np.unique(df_transpose["Year"]))
         # Generate grid of years
@@ -425,9 +450,7 @@ for i in range(len(full_ticker_list)):
         merged_df["BVE_per_share_growth_3_f"] = merged_df["BVE_per_share_1_f"].rolling(window=3).mean()
 
         # Write to CSV
-        merged_df.to_csv(
-            r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\USA_platform_data\_" + company_label + ".csv")
-        # merged_df.to_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\casework\RMD\data\_"+company_label+".csv")
+        merged_df.to_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\USA_platform_data\_" + company_label + ".csv")
 
         # Now get Adjusted Close Price & save separately
         req_array = [
