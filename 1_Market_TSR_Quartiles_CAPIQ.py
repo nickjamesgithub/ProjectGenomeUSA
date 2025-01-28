@@ -1,59 +1,57 @@
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib.patches import Rectangle
 import matplotlib
+
 matplotlib.use('TkAgg')
-pd.set_option('compute.use_numexpr', True)
 
 """
-This is a TSR Driver analysis where you can choose the sector and identify the key drivers
+This is a tool to compute TSR Quartiles and generate the Firefly comparison at the market level
 """
 
 # Import data
-mapping_data = pd.read_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\Company_list_GPT_SP500.csv")
-# Choose sectors to include
-sector = mapping_data["Sector_new"].values
-plot_label = "Market"
-# sector = ["Banking", "Industrials", "Consumer Discretionary", "Gaming"]
+data = pd.read_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\global_platform_data\Global_data.csv")
 
-# Import data
-mapping_data = pd.read_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\Company_list_GPT_SP500.csv")
+# Define countries and sectors to include
+countries_to_include = ["AUS"] # 'USA', 'AUS', 'INDIA', 'JAPAN', 'EURO', 'UK'
+sectors_to_include = ['Industrials', 'Materials', 'Healthcare', 'Technology',
+                      'Insurance', 'Gaming/alcohol', 'Media', 'REIT', 'Utilities',
+                      'Consumer staples', 'Consumer Discretionary',
+                      'Investment and Wealth', 'Telecommunications', 'Energy', 'Banking',
+                      'Metals', 'Financials - other', 'Mining', 'Consumer Staples',
+                      'Diversified', 'Rail Transportation', 'Transportation']
 
-# Required tickers
-tickers_ = mapping_data.loc[mapping_data["Sector_new"].isin(sector)]["Ticker"].values
+# Filter data based on countries and sectors
+filtered_data = data.loc[(data['Country'].isin(countries_to_include)) & (data['Sector'].isin(sectors_to_include))]
 
-# List of year
-year_lb = 2010
-year_ub = 2024
-year_grid = np.linspace(year_lb, year_ub, year_ub-year_lb+1)
+# Ensure relevant columns are numeric
+filtered_data['TSR_CIQ_no_buybacks'] = pd.to_numeric(filtered_data['TSR_CIQ_no_buybacks'], errors='coerce')
+filtered_data['Year'] = pd.to_numeric(filtered_data['Year'], errors='coerce')
 
-tsr_list = []
-year_list = []
-for i in range(len(tickers_)):
-    try:
-        print("Iteration ", tickers_[i])
-        company_i = tickers_[i]
-        # Standard data
-        df = pd.read_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\USA_platform_data\_"+company_i+".csv")
-        # Append TSR
-        tsr = df["TSR_CIQ_no_buybacks"]
-        tsr_list.append(tsr)
-    except:
-        print("Issue with company data for ", tickers_[i])
+# Drop rows with NaN or invalid values
+filtered_data = filtered_data.dropna(subset=['TSR_CIQ_no_buybacks', 'Year'])
 
-# Create TSR dataframe
-tsr_df = pd.DataFrame(tsr_list)
-tsr_df.replace([np.nan, np.inf], 0, inplace=True)
-tsr_df.columns = year_grid
+# Filter data for years between 2014 and 2024
+filtered_data = filtered_data[(filtered_data['Year'] >= 2014) & (filtered_data['Year'] <= 2024)]
 
-# Generate Boxplot for market
-fig, ax = plt.subplots()
-bp = ax.boxplot(tsr_df.iloc[:,1:], showfliers=False)
-ax.set_xticklabels(year_grid.astype(int)[1:])
-plt.ylabel("Average TSR")
-plt.xlabel("Year")
-plt.title(plot_label + " TSR Quartiles")
-plt.savefig(plot_label + " TSR Quartiles")
+# Group data by Year and create a list of TSR values for each year
+tsrs_by_year = [filtered_data.loc[filtered_data['Year'] == year, 'TSR_CIQ_no_buybacks'].values for year in range(2014, 2025)]
+
+# Create a boxplot
+fig, ax = plt.subplots(figsize=(12, 8))
+ax.boxplot(tsrs_by_year, patch_artist=True, showfliers=False,
+           boxprops=dict(facecolor='blue', color='black'),
+           medianprops=dict(color='red'))
+
+# Set axis labels and title
+ax.set_xticks(range(1, 12))  # 2014 to 2024 corresponds to 11 years
+ax.set_xticklabels(range(2014, 2025), rotation=45, ha='right')
+ax.set_xlabel('Year')
+ax.set_ylabel('TSR (Total Shareholder Return)')
+plt.title('Yearly Distribution of TSR by Country and Sector')
+plt.tight_layout()
+
+# Save and display the plot
+plt.savefig(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\casework\TSR_Distribution_Boxplot.png")
 plt.show()
-
-

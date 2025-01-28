@@ -6,34 +6,29 @@ import matplotlib
 matplotlib.use('TkAgg')
 
 # Import data
-mapping_data = pd.read_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\Company_list_GPT_SP500.csv")
-# Choose sectors to include
-sector = mapping_data["Sector_new"].values
+data = pd.read_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\global_platform_data\Global_data.csv")
 
-# Required tickers
-tickers_ = mapping_data.loc[mapping_data["Sector_new"].isin(sector)]["Ticker"].values
+# Define countries and sectors to include
+countries_to_include = ["AUS"] # 'USA', 'AUS', 'INDIA', 'JAPAN', 'EURO', 'UK'
+sectors_to_include = ['Industrials', 'Materials', 'Healthcare', 'Technology',
+                      'Insurance', 'Gaming/alcohol', 'Media', 'REIT', 'Utilities',
+                      'Consumer staples', 'Consumer Discretionary',
+                      'Investment and Wealth', 'Telecommunications', 'Energy', 'Banking',
+                      'Metals', 'Financials - other', 'Mining', 'Consumer Staples',
+                      'Diversified', 'Rail Transportation', 'Transportation']
 
-dfs_list = []
-for i in range(len(tickers_)):
-    company_i = tickers_[i]
-    try:
-        df = pd.read_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\USA_platform_data\_"+company_i+".csv")
-        dfs_list.append(df)
-        print("Company data ", company_i)
-    except:
-        print("Error with company ", company_i)
+# Filter data based on countries and sectors
+filtered_data = data.loc[(data['Country'].isin(countries_to_include)) & (data['Sector'].isin(sectors_to_include))]
 
-# Merge dataframes
-df_merge = pd.concat(dfs_list)
 # Infer metrics
-df_merge["Market_Capitalisation_inferred"] = df_merge["Stock_Price"] * df_merge["Shares_outstanding"]
-df_merge["PE_inferred"] = df_merge["Stock_Price"]/df_merge["Diluted_EPS"]
+filtered_data["Market_Capitalisation_inferred"] = filtered_data["Stock_Price"] * filtered_data["Shares_outstanding"]
+filtered_data["PE_inferred"] = filtered_data["Stock_Price"]/filtered_data["Diluted_EPS"]
 
 # Drop rows with missing values in key columns
 features = ["Company_name", "Year", "Market_Capitalisation",  "Book_Value_Equity", "Shares_outstanding", "Dividends_Paid", "Stock_repurchased",
             "Dividend_Yield", "Buyback_Yield", "Dividend_Buyback_Yield", "ROTE", "PE", "PE_Implied",  "Diluted_EPS","NPAT", "Stock_Price"]
 
-df_slice_ = df_merge[features]
+df_slice_ = filtered_data[features]
 df_slice = df_slice_.dropna()
 df_slice["BVE_per_share"] = df_slice["Book_Value_Equity"] / df_slice["Shares_outstanding"]
 
