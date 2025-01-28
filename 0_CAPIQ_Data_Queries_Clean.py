@@ -6,7 +6,7 @@ import pandas as pd
 import numpy as np
 import os  # Ensure this is imported at the top
 
-country_list = ["INDIA", "JAPAN", "EURO", "UK", "USA", "AUS"]
+country_list = ["AUS"] # "INDIA", "JAPAN", "EURO", "UK", "USA", "AUS"
 # Define the base directory where you want to save the files
 base_directory = r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\global_platform_data"
 
@@ -505,7 +505,7 @@ for c in range(len(country_list)):
             price_df = pd.concat([dates, share_price_adjusted], axis=1)
             price_df.columns = ["Date", "Price"]
             os.makedirs(rf"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\global_platform_data\share_price\{country_import}", exist_ok=True)
-            merged_df.to_csv(rf"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\global_platform_data\share_price\{country_import}\_" + company_label +"_price.csv")
+            price_df.to_csv(rf"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\global_platform_data\share_price\{country_import}\_" + company_label +"_price.csv")
 
         except:
             print("Issue with ticker ", full_ticker_list[i])
