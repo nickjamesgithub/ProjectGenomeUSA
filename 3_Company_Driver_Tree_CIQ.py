@@ -1,27 +1,37 @@
 import pandas as pd
-import matplotlib.pyplot as plt
-import matplotlib
 import numpy as np
-import networkx as nx
+import matplotlib.pyplot as plt
 import string
+from matplotlib.patches import Rectangle
+from sklearn.ensemble import RandomForestRegressor
+import shap
+from Utilities import compute_percentiles
+import matplotlib
+from Utilities import generate_market_cap_class, waterfall_value_plot, geometric_return
+import networkx as nx
 matplotlib.use('TkAgg')
-from Utilities import generate_market_cap_class, waterfall_value_plot
 
-# Company name
-company_list = "CSL:ASX"
-company = company_list[:3]
+"""
+This is a script to compute a company driver tree over different windows
+"""
+
+# Import data
+data = pd.read_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\global_platform_data\Global_data.csv")
+
+# Company Ticker & name slice
+company = "NYSE:LMT"
+company_name = data.loc[data["Ticker_full"]==company]["Company_name"].values[0]
 
 # Year range
 beginning_year = 2014
-end_year = 2023
+end_year = 2024
 tsr_method = "capital_iq" # bain, capital_iq
 
-# Import data & slice specific company
-company_slice = pd.read_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\Capiq_data\_"+company+".csv")
-mapping_data = pd.read_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\company_list_asx200.csv")
+# Slice data for specific company
+company_slice = data.loc[data["Ticker_full"]==company]
 
 # Get cost of equity values
-df_slice = company_slice.loc[(company_slice["Ticker"]==company) &
+df_slice = company_slice.loc[(company_slice["Ticker_full"]==company) &
                                    (company_slice["Year"] >= beginning_year) &
                                    (company_slice["Year"] <= end_year)][["Year", "TSR", "Cost of Equity", "Stock_Price", "Adjusted_Stock_Price", "DPS", "BBPS", "DBBPS",
                                                                          "Dividend_Yield", "Buyback_Yield", "Stock_gain_loss"]]
@@ -92,7 +102,7 @@ labels = {
 fig, axs = plt.subplots(1, 1, figsize=(20, 15))
 nx.draw_networkx(G, pos=pos, labels=labels, arrows=True,
                  node_shape="s", node_color="white")
-company_flat = company.translate(str.maketrans('', '', string.punctuation))
+company_flat = company_name.translate(str.maketrans('', '', string.punctuation))
 plt.savefig("Average_Driver_tree_" + str(beginning_year) + "-" + str(end_year) + "-" + company_flat)
 plt.title("Average_Driver_tree_" + str(beginning_year) + "-" + str(end_year) + "-" + company_flat)
 plt.show()

@@ -1,31 +1,39 @@
-import numpy as np
 import pandas as pd
-import matplotlib
-import string
-from matplotlib.patches import Rectangle
 import numpy as np
 import matplotlib.pyplot as plt
+import string
+from matplotlib.patches import Rectangle
+import matplotlib
 matplotlib.use('TkAgg')
-from sklearn.cluster import KMeans
 
-# Company name
-company_list = ["MSFT:"] #"MSFT:", "NVDA:", "TSLA:", "AMZN:", "GOOG:", "NFLX:", "META:"
-plot_label = "Microsoft" # company[:3]
+# Import data
+data = pd.read_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\global_platform_data\Global_data.csv")
+
+# Full ticker list
+full_ticker_list = ["NYSE:MMM", "NYSE:CAT", "NYSE:GE", "NasdaqGS:HON", "NasdaqGS:UAL"]
+ticker_list = data.loc[data["Ticker_full"].isin(full_ticker_list)]["Ticker"].unique()
+company_name_list = data.loc[data["Ticker_full"].isin(full_ticker_list)]["Company_name"].unique()
+plot_label = "Firefly_global"
 
 x_axis_list = []
 y_axis_list = []
 labels_list = []
 
-for i in range(len(company_list)):
-    company, idx = company_list[i].split(":")
+for i in range(len(full_ticker_list)):
+    company, idx = full_ticker_list[i].split(":")
+    # Loop over companies & countries
+    country_i = data.loc[data["Ticker_full"]==full_ticker_list[i]]["Country"].values[0]
+    ticker_i = ticker_list[i]
+    # Update paths for raw data and share prices based on the country
+    df = pd.read_csv(fr"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\global_platform_data\{country_i}\_{ticker_i}.csv")
 
     # Import data & slice specific company
-    company_slice = pd.read_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\USA_platform_data\_"+company+".csv")
+    company_slice = pd.read_csv(fr"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\global_platform_data\{country_i}\_{ticker_i}.csv")
 
     # Engineer individual columns
     labels = np.array(company_slice["Year"])
     x_axis = np.array(company_slice["Revenue_growth_3_f"])
-    y_axis = np.array(company_slice["EP/FE"])
+    y_axis = np.array(company_slice["EVA_ratio_bespoke"])
 
     # Append results from all companies in a list
     x_axis_list.append(list(x_axis))
@@ -58,10 +66,10 @@ fig, ax = plt.subplots()
 for i in range(len(x_fill_list)):
     # Generate plots
     if i == 0:
-        plt.plot(x_axis_list[i], y_axis_list[i], '-o', label=company_list[i], color="blue")
+        plt.plot(x_axis_list[i], y_axis_list[i], '-o', label=company_name_list[i], color="blue")
     # If we want a generic figure for all competitors, just do !=
     if i != 0:
-        plt.plot(x_axis_list[i], y_axis_list[i], '-o', label=company_list[i], alpha=0.4, linestyle='--')
+        plt.plot(x_axis_list[i], y_axis_list[i], '-o', label=company_name_list[i], alpha=0.4, linestyle='--')
     for j, txt in enumerate(labels_list[i]):
         plt.annotate(labels_list[i][j], (x_axis_list[i][j], y_axis_list[i][j]), fontsize=6)
 
@@ -78,7 +86,7 @@ for x_range in x_segment_ranges:
 
 plt.title(plot_label)
 plt.xlabel("Revenue growth (3 year moving average)")
-plt.ylabel("EP/FE")
+plt.ylabel("EVA Ratio")
 plt.legend()
 plt.savefig(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\casework\USA_technology\Firefly_plot_CAPIQ_" + plot_label)
 plt.show()
