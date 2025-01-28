@@ -5,41 +5,35 @@ import string
 from matplotlib.patches import Rectangle
 from sklearn.ensemble import RandomForestRegressor
 import shap
+from Utilities import compute_percentiles
 import matplotlib
+from Utilities import generate_market_cap_class, waterfall_value_plot, geometric_return
 matplotlib.use('TkAgg')
 
 """
-This is a TSR Driver analysis where you can choose the sector and identify the key drivers
+This is a script to compute the waterfall for an entire sector, or collection of sectors
 """
 
-# Choose sector
-sector = ["Technology"]
-
 # Import data
-mapping_data = pd.read_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\Company_list_GPT_SP500.csv")
+data = pd.read_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\global_platform_data\Global_data.csv")
+# Define countries and sectors to include
+countries_to_include = ["JAPAN"] # 'USA', 'AUS', 'INDIA', 'JAPAN', 'EURO', 'UK'
+sectors_to_include = ['Healthcare', "Technology"]
+plot_label = "Japan_healthcare_tech"
+
+# Filter data based on countries and sectors
+df_merge = data.loc[(data['Country'].isin(countries_to_include)) & (data['Sector'].isin(sectors_to_include))]
 
 # Required tickers
-tickers_ = mapping_data.loc[mapping_data["Sector_new"].isin(sector)]["Ticker"].values
-
-dfs_list = []
-for i in range(len(tickers_)):
-    try:
-        company_i = tickers_[i]
-        df = pd.read_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\USA_platform_data\_" + company_i + ".csv")
-        dfs_list.append(df)
-        print("Company data ", company_i)
-    except:
-        print("error with company ", company_i)
-
-# Merge dataframes
-df_merge = pd.concat(dfs_list)
+tickers_ = np.unique(df_merge["Ticker"].values)
 df_merge_clean = df_merge.dropna()
 
 # Random Forest Fit
 X_drivers = ["Revenue_growth_1_f", "NAV_1_f", "Economic_profit_1_f", "EP/FE_1_f", "profit_margin_1_f",
 "ROTE", "ROTE_above_Cost_of_equity", "roa_1_f", "Revenue_growth_2_f", "NAV_growth_2_f", "EP_growth_2_f", "EP/FE_growth_2_f",
 "profit_margin_growth_2_f", "roa_growth_2_f", "Revenue_growth_3_f", "NAV_growth_3_f",
-"EP_growth_3_f", "EP/FE_growth_3_f", "profit_margin_growth_3_f", "roa_growth_3_f", "CROTE_TE", "BVE_per_share_1_f", "BVE_per_share_growth_2_f", "BVE_per_share_growth_3_f"]
+"EP_growth_3_f", "EP/FE_growth_3_f", "profit_margin_growth_3_f", "roa_growth_3_f", "CROTE_TE", "BVE_per_share_1_f", "BVE_per_share_growth_2_f", "BVE_per_share_growth_3_f", "EVA_momentum",  "EVA_shock",
+             "EVA_Profitable_Growth", "EVA_Productivity_Gains", "EVA_ratio_bespoke"]
 
 # Fill na values with 0
 X = df_merge_clean[X_drivers]
@@ -54,5 +48,5 @@ rf.fit(X, y)
 explainer = shap.Explainer(rf, X)
 shap_values = explainer(X)
 fig = shap.summary_plot(shap_values, X, max_display=10, show=False)
-plt.savefig("_Capiq" + sector[0] + "_" + "_Shap.png")
+plt.savefig("_Capiq" + plot_label + "_" + "_Shap.png")
 plt.show()

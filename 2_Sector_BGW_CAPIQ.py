@@ -5,15 +5,18 @@ import matplotlib
 matplotlib.use('TkAgg')
 
 # Import data
-mapping_data = pd.read_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\Company_list_GPT_SP500.csv")
-# Choose sectors to include
-# sector = mapping_data["Sector_new"].values
-sector = ["Technology"]
+data = pd.read_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\global_platform_data\Global_data.csv")
+plot_label = "XXX"
+
+# Define countries and sectors to include
+countries_to_include = ["AUS", "INDIA"] # 'USA', 'AUS', 'INDIA', 'JAPAN', 'EURO', 'UK'
+sectors_to_include = ['Healthcare']
+
+# Filter data based on countries and sectors
+filtered_data = data.loc[(data['Country'].isin(countries_to_include)) & (data['Sector'].isin(sectors_to_include))]
 
 # Required tickers
-tickers_ = mapping_data.loc[mapping_data["Sector_new"].isin(sector)]["Ticker"].values
-# tickers_ = ["CSL:ASX"]
-plot_label = "USA_technology"
+tickers_ = np.unique(filtered_data["Ticker"].values)
 
 # Store Black/Grey/White values
 bgw_values_list = []
@@ -23,24 +26,28 @@ for i in range(len(tickers_)):
     company_i = tickers_[i]
 
     try:
-        df = pd.read_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\USA_platform_data\_"+company_i+".csv")
-        price_df = pd.read_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\USA_platform_data\share_price\_"+company_i+"_price.csv")
+        # Determine the country for the current ticker
+        country_i = filtered_data.loc[filtered_data["Ticker"] == company_i, "Country"].values[0]
+
+        # Update paths for raw data and share prices based on the country
+        df = pd.read_csv(fr"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\global_platform_data\{country_i}\_{company_i}.csv")
+        price_df = pd.read_csv(fr"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\global_platform_data\share_price\{country_i}\_{company_i}_price.csv")
         current_price = price_df["Price"].iloc[-1]
 
         print("Company data ", company_i)
 
         # EPS, T-2
-        eps_t_2 = df.loc[df["Year"]==2022]["Diluted_EPS"].values[0]
+        eps_t_2 = df.loc[df["Year"]==2023]["Diluted_EPS"].values[0]
         # EPS, T-1
-        trailing_eps = df.loc[df["Year"]==2023]["Diluted_EPS"].values[0]
+        trailing_eps = df.loc[df["Year"]==2024]["Diluted_EPS"].values[0]
         # Inferred EPS Growth Rate
         eps_growth = trailing_eps/eps_t_2 - 1
         # EPS, T+1
         forward_eps = trailing_eps * (1+eps_growth)
         # Trailing P/E
-        trailing_pe = df.loc[df["Year"] == 2023]["PE_Implied"].values[0]
+        trailing_pe = df.loc[df["Year"] == 2024]["PE_Implied"].values[0]
         # Forward P/E
-        forward_pe = (df.loc[df["Year"]==2023]["Stock_Price"] / forward_eps).values[0]
+        forward_pe = (df.loc[df["Year"]==2024]["Stock_Price"] / forward_eps).values[0]
 
         # Compute Cost of equity
         cost_of_equity = df["Cost of Equity"].iloc[-1]

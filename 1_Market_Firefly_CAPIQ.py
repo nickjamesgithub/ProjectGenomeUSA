@@ -14,7 +14,7 @@ This is a tool to compute an evolutionary Firefly at the market level
 data = pd.read_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\global_platform_data\Global_data.csv")
 
 # Choose loop configuration: "countries", "sectors", "countries_and_sectors"
-loop_mode = "countries_and_sectors"  # Options: "countries", "sectors", "countries_and_sectors"
+loop_mode = "countries"  # Options: "countries", "sectors", "countries_and_sectors"
 
 # Define countries and sectors to include
 countries_to_include = ['USA', 'AUS', 'INDIA', 'JAPAN', 'EURO', 'UK']  # 'USA', 'AUS', 'INDIA', 'JAPAN', 'EURO', 'UK'

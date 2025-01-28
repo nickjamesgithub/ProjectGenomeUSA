@@ -6,7 +6,7 @@ import pandas as pd
 import numpy as np
 import os  # Ensure this is imported at the top
 
-country_list = ["AUS"] # "INDIA", "JAPAN", "EURO", "UK", "USA", "AUS"
+country_list = ["JAPAN", "EURO", "UK", "USA", "AUS", "INDIA"] # "INDIA", "JAPAN", "EURO", "UK", "USA", "AUS"
 # Define the base directory where you want to save the files
 base_directory = r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\global_platform_data"
 

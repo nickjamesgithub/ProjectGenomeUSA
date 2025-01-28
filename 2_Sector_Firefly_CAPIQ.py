@@ -6,130 +6,109 @@ import matplotlib
 
 matplotlib.use('TkAgg')
 
-""" 
-This is a tool to compute en evolutionary Firefly at the sector level (bespoke)
+"""
+This is a tool to compute an evolutionary Firefly at a country/sector level
 """
 
-# Choose sector
-sector_list = ["Industrials"]
-plot_title = "USA_Industrials_Firefly"
-
 # Import data
-mapping_data = pd.read_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\Company_list_GPT_SP500.csv")
+data = pd.read_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\global_platform_data\Global_data.csv")
 
-# Required tickers
-tickers_ = mapping_data.loc[mapping_data["Sector_new"].isin(sector_list)]["Ticker"].values
+# Define countries and sectors to include
+countries_to_include = ['USA'] # 'USA', 'AUS', 'INDIA', 'JAPAN', 'EURO', 'UK'
+sectors_to_include = ["Banking"]
+plot_label = "US_Banking"
 
-# Create lists for Market cap / Rolling Revenue and EP/FE
-market_cap_list = []
-revenue_rolling = []
-ep_fe = []
-df_list = []
-company_tickers_list = []
+# 'Industrials', 'Materials', 'Healthcare', 'Technology',
+#        'Insurance', 'Gaming/alcohol', 'Media', 'REIT', 'Utilities',
+#        'Consumer staples', 'Consumer Discretionary',
+#        'Investment and Wealth', 'Telecommunications', 'Energy', 'Banking',
+#        'Metals', 'Financials - other', 'Mining', 'Consumer Staples',
+#        'Diversified', 'Rail Transportation', 'Transportation'
 
-for i in range(len(tickers_)):
-    try:
-        print("Iteration ", tickers_[i])
-        company_i = tickers_[i]
-        # Standard data
-        df = pd.read_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\USA_platform_data\_" + company_i + ".csv")
+# Filter the data based on the selected countries and sectors
+filtered_data = data.copy()
+filtered_data = filtered_data[filtered_data["Country"].isin(countries_to_include)]
+filtered_data = filtered_data[filtered_data["Sector"].isin(sectors_to_include)]
 
-        # Slice key features
-        year = df["Year"]
-        market_cap = df["Market_Capitalisation"]
-        revenue_rolling = df["Revenue_growth_3_f"]
-        ep_fe = df["EP/FE"]
+# Drop rows with NaN or Inf values in critical columns
+filtered_data["Revenue_growth_3_f"] = pd.to_numeric(filtered_data["Revenue_growth_3_f"], errors="coerce")
+filtered_data["EVA_ratio_bespoke"] = pd.to_numeric(filtered_data["EVA_ratio_bespoke"], errors="coerce")
+filtered_data = filtered_data.replace([np.inf, -np.inf], np.nan)  # Replace inf/-inf with NaN
+filtered_data = filtered_data.dropna(subset=["Revenue_growth_3_f", "EVA_ratio_bespoke"])  # Drop NaN
 
-        # Append dataframe for specific company
-        df_slice = pd.DataFrame([year, market_cap, revenue_rolling, ep_fe]).transpose()
-        df_list.append(df_slice)
-        company_tickers_list.append(company_i)
-
-    except:
-        print("Issue with company data for ", tickers_[i])
-
-# Merge all dataframes into one master
-df_merged = pd.concat(df_list, axis=0)
-
-# List of year
-year_lb = 2015
-year_ub = 2023
-year_grid = np.linspace(year_lb, year_ub, year_ub - year_lb + 1)
-
+# Prepare lists for plotting
 x_axis_list = []
 y_axis_list = []
 labels_list = []
 
-for i in range(len(year_grid)):
-    df_year = df_merged.loc[df_merged["Year"] == year_grid[i]]
-    print("Iteration year ", year_grid[i])
+# Loop over each year
+year_lb = 2014
+year_ub = 2024
+year_grid = np.linspace(year_lb, year_ub, int(year_ub - year_lb + 1))
 
-    market_cap_vector = df_year["Market_Capitalisation"].values
-    revenue_rolling_vector = np.nan_to_num(df_year["Revenue_growth_3_f"].values)
-    ep_fe_vector = np.nan_to_num(df_year["EP/FE"].values)
+for year in year_grid:
+    df_year = filtered_data[filtered_data["Year"] == year]
+
+    # Ensure Market_Capitalisation is numeric
+    df_year["Market_Capitalisation"] = pd.to_numeric(df_year["Market_Capitalisation"], errors="coerce").fillna(0)
+
+    # Filter out outliers based on thresholds
+    mask = (
+        (df_year["Revenue_growth_3_f"] >= -10) & (df_year["Revenue_growth_3_f"] <= 10) &
+        (df_year["EVA_ratio_bespoke"] >= -10) & (df_year["EVA_ratio_bespoke"] <= 10)
+    )
+    df_valid = df_year[mask]
+
+    # Ensure numeric vectors
+    revenue_rolling_vector = pd.to_numeric(df_valid["Revenue_growth_3_f"], errors='coerce').fillna(0).values
+    eva_ratio_bespoke = pd.to_numeric(df_valid["EVA_ratio_bespoke"], errors='coerce').fillna(0).values
+    market_cap_vector = np.nan_to_num(df_valid["Market_Capitalisation"].values)
 
     # Compute weighted contribution vectors
-    mcap_total = market_cap_vector.sum()
-    mcap_weighted = market_cap_vector / mcap_total
+    mcap_total = np.sum(market_cap_vector)
+    mcap_weighted = market_cap_vector / mcap_total if mcap_total != 0 else np.zeros_like(market_cap_vector)
 
     # Weighted contribution for each feature
     revenue_rolling_weighted = np.dot(mcap_weighted, revenue_rolling_vector)
-    ep_fe_weighted = np.dot(mcap_weighted, ep_fe_vector)
+    eva_ratio_weighted = np.dot(mcap_weighted, eva_ratio_bespoke)
 
-    # Append total
+    # Append totals for plotting
     x_axis_list.append(revenue_rolling_weighted)
-    y_axis_list.append(ep_fe_weighted)
-    labels_list.append(year_grid[i])
+    y_axis_list.append(eva_ratio_weighted)
+    labels_list.append(year)
 
-# Append to global list
-x_axis_list = [x_axis_list]
-y_axis_list = [y_axis_list]
-labels_list = [labels_list]
+# Plot the firefly plot
+fig, ax = plt.subplots(figsize=(10, 6))
 
-# Generate the grid for each axis
-x_pad = len(max(x_axis_list, key=len))
-x_fill_list = np.array([i + [0] * (x_pad - len(i)) for i in x_axis_list])
-y_pad = len(max(x_axis_list, key=len))
-y_fill_list = np.array([i + [0] * (y_pad - len(i)) for i in y_axis_list])
-labels_pad = len(max(labels_list, key=len))
-labels_fill_list = np.array([i + [0] * (labels_pad - len(i)) for i in labels_list])
+# Plot the data
+ax.plot(x_axis_list, y_axis_list, '-o', label="Firefly", color="blue")
+for j in range(len(x_axis_list)):
+    ax.annotate(f"{int(labels_list[j])}", (x_axis_list[j], y_axis_list[j]), fontsize=8)
 
-x = np.linspace(np.min(np.nan_to_num(x_fill_list)), np.max(np.nan_to_num(x_fill_list)), 100)
-y = np.linspace(np.min(np.nan_to_num(y_fill_list)), np.max(np.nan_to_num(y_fill_list)), 100)
-
-# Set automatic parameters for plotting
-x_lb = min(-.3, np.min(x))
-x_ub = max(.3, np.max(x))
-y_lb = min(-.3, np.min(y))
-y_ub = max(.3, np.max(y))
-
-x_segment_ranges = [(x_lb, 0), (0, .1), (.1, .2), (.2, x_ub)]
+# Draw labeled rectangles for grid
+x_lb, x_ub = -0.3, 0.3
+y_lb, y_ub = -0.3, 0.3
+x_segment_ranges = [(x_lb, 0), (0, 0.1), (0.1, 0.2), (0.2, x_ub)]
 y_segment_ranges = [(y_lb, 0), (0, y_ub)]
 label_counter = 0
-labels = ["Untenable", "Challenged", "Trapped", "Virtuous", "Brave", "Famous", "Fearless", "Legendary"]
-
-fig, ax = plt.subplots()
-for i in range(len(x_fill_list)):
-    # Generate plots
-    if i == 0:
-        plt.plot(x_axis_list[i], y_axis_list[i], '-o', color="blue")
-    for j, txt in enumerate(labels_list[i]):
-        plt.annotate(labels_list[i][j], (x_axis_list[i][j], y_axis_list[i][j]), fontsize=6)
+box_labels = ["Untenable", "Challenged", "Trapped", "Virtuous", "Brave", "Famous", "Fearless", "Legendary"]
 
 for x_range in x_segment_ranges:
     for y_range in y_segment_ranges:
         rect = Rectangle((x_range[0], y_range[0]), x_range[1] - x_range[0], y_range[1] - y_range[0],
-                         linewidth=0.3, edgecolor='black', facecolor='red', alpha=0.5)
+                         linewidth=0.3, edgecolor='black', facecolor='red', alpha=0.2)
         ax.add_patch(rect)
-        # Add labels to each rectangle
-        label = labels[label_counter]
-        ax.text((x_range[0] + x_range[1]) / 2, (y_range[0] + y_range[1]) / 2, label,
-                ha='center', va='center', color='black', fontsize=8, fontweight='bold', rotation=15)
+        box_label = box_labels[label_counter]
+        ax.text((x_range[0] + x_range[1]) / 2, (y_range[0] + y_range[1]) / 2, box_label,
+                ha='center', va='center', fontsize=8, fontweight='bold')
         label_counter += 1
 
-plt.title(plot_title)
+# Final plot settings
+plt.title(plot_label)
 plt.xlabel("Revenue growth (3 year moving average)")
-plt.ylabel("Economic profit / funds employed")
+plt.ylabel("EVA Ratio")
 plt.legend()
-plt.savefig(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\casework\Firefly_plot_CAPIQ_" + plot_title)
+plt.grid(True)
+plt.tight_layout()
+plt.savefig(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\casework\Firefly_Single_Plot.png")
 plt.show()
