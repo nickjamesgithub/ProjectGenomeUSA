@@ -2,59 +2,38 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib
 import numpy as np
-import glob
-import os
+import pandas as pd
+import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
+import seaborn as sns
+matplotlib.use('TkAgg')
 
-# grid = np.linspace(2011,2020,10)
-#
-# # Store quartile values over time
-# quartile_75_list = []
-# quartile_50_list = []
-# quartile_25_list = []
-#
-# for i in range(len(grid)):
-
-# Year range
-beginning_year = 2019
-end_year = 2024
-tsr_method = "capital_iq" # bain or capital_iq
-make_plots = False
+# Read the data
+df = pd.read_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\global_platform_data\Global_data.csv")
 
 # Apply Genome Filter
 genome_filtering = False
-sp500 = True
+plot_label = "Global"
 
-matplotlib.use('TkAgg')
+# Desired sectors and date range
+country_list = ["USA"] # "USA", 'AUS', 'INDIA', 'JAPAN', 'EURO', 'UK'
+unique_sectors = df["Sector"].unique()
+desired_sectors = unique_sectors
+start_year = 2021
+end_year = 2024
+tsr_method = "capital_iq" # bain or capital_iq
+make_plots = True
 
-# Import data
-mapping_data = pd.read_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\Company_list_GPT_SP500.csv")
-# Choose sectors to include
-sector = mapping_data["Sector_new"].values
-
-# Required tickers
-tickers_ = mapping_data.loc[mapping_data["Sector_new"].isin(sector)]["Ticker"].values
-
-if sp500:
-    dfs_list = []
-    for i in range(len(tickers_)):
-        company_i = tickers_[i]
-        try:
-            df = pd.read_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\USA_platform_data\_" + company_i + ".csv")
-            # df = pd.read_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\Capiq_data\_" + company_i + ".csv")
-            dfs_list.append(df)
-            print("Company data ", company_i)
-        except:
-            print("Error with company ", company_i)
-
-
-# Merge dataframes
-df_merge = pd.concat(dfs_list)
+# 1. Filter by Country & Sector
+df_merge = df[(df['Country'].isin(country_list)) & (df["Sector"]).isin(unique_sectors)]
+# 2. Filter by date range
+df_merge = df_merge[(df_merge['Year'] >= start_year) & (df_merge['Year'] <= end_year)]
 # Create feature for Price-to-book
 df_merge["Price_to_Book"] = df_merge["Market_Capitalisation"]/df_merge["Book_Value_Equity"]
 
-
 # Get unique tickers
-unique_tickers = df_merge["Ticker"].unique()
+unique_tickers = df_merge["Ticker_full"].unique()
+
 
 # Loop over unique tickers
 dfs_concise_list = []
@@ -65,38 +44,32 @@ for i in range(len(unique_tickers)):
 
     try:
         # Slice ticker_i within date range
-        df_slice = df_merge.loc[(df_merge["Ticker"]==ticker_i) &
-            (df_merge["Year"] >= beginning_year) & (df_merge["Year"] <= end_year)
-                                ][["Year", "TSR", "Company_name", "Cost of Equity", "Stock_Price", "Adjusted_Stock_Price", "DPS", "BBPS", "DBBPS",
-                                                                       "EP/FE", "Revenue_growth_3_f", "Price_to_Book",  "Dividend_Yield", "Buyback_Yield"]]
+        df_slice = df_merge.loc[(df_merge["Ticker_full"]==ticker_i) & (df_merge["Year"] >= start_year) & (df_merge["Year"] <= end_year)][["Year", "TSR", "Company_name", "Cost of Equity", "Stock_Price", "Adjusted_Stock_Price", "DPS", "BBPS", "DBBPS",
+                                                                       "EVA_ratio_bespoke", "Revenue_growth_3_f", "Price_to_Book",  "Dividend_Yield", "Buyback_Yield"]]
 
         # Get Cumulative TSR components + Average yields
         company_name_i = df_slice["Company_name"].unique()[0]
 
         # Get Final year EP/FE and Revenue growth
-        ep_fe_final = df_slice.loc[df_slice["Year"]==end_year]["EP/FE"].iloc[0]
+        eva_final = df_slice.loc[df_slice["Year"]==end_year]["EVA_ratio_bespoke"].iloc[0]
         revenue_growth_final = df_slice.loc[df_slice["Year"] == end_year]["Revenue_growth_3_f"].iloc[0]
         price_to_book_final = df_slice.loc[df_slice["Year"] == end_year]["Price_to_Book"].iloc[0]
 
         # Get unadjusted stock prices
-        beginning_price = df_slice.loc[df_slice["Year"]==beginning_year]["Stock_Price"].values[0]
+        beginning_price = df_slice.loc[df_slice["Year"]==start_year]["Stock_Price"].values[0]
         final_price = df_slice.loc[df_slice["Year"]==end_year]["Stock_Price"].values[0]
 
         # Get adjusted stock prices
-        beginning_price_adjusted = df_slice.loc[df_slice["Year"]==beginning_year]["Adjusted_Stock_Price"].values[0]
+        beginning_price_adjusted = df_slice.loc[df_slice["Year"]==start_year]["Adjusted_Stock_Price"].values[0]
         final_price_adjusted = df_slice.loc[df_slice["Year"]==end_year]["Adjusted_Stock_Price"].values[0]
 
         # Cumulative dividends and buybacks per share
-        cumulative_dps = np.sum(np.nan_to_num(df_slice.loc[(df_slice["Year"]>beginning_year) &
-                                      (df_slice["Year"]<=end_year)]["DPS"]))
-        cumulative_bbps = np.sum(np.nan_to_num(df_slice.loc[(df_slice["Year"]>beginning_year) &
-                                      (df_slice["Year"]<=end_year)]["BBPS"]))
+        cumulative_dps = np.sum(np.nan_to_num(df_slice.loc[(df_slice["Year"]>start_year) & (df_slice["Year"]<=end_year)]["DPS"]))
+        cumulative_bbps = np.sum(np.nan_to_num(df_slice.loc[(df_slice["Year"]>start_year) & (df_slice["Year"]<=end_year)]["BBPS"]))
 
         # Average dividend and buyback yield
-        avg_dividend_yield = df_slice.loc[(df_slice["Year"]>beginning_year) &
-                                      (df_slice["Year"]<=end_year)]["Dividend_Yield"].mean()
-        avg_buyback_yield = df_slice.loc[(df_slice["Year"]>beginning_year) &
-                                      (df_slice["Year"]<=end_year)]["Buyback_Yield"].mean()
+        avg_dividend_yield = df_slice.loc[(df_slice["Year"]>start_year) & (df_slice["Year"]<=end_year)]["Dividend_Yield"].mean()
+        avg_buyback_yield = df_slice.loc[(df_slice["Year"]>start_year) & (df_slice["Year"]<=end_year)]["Buyback_Yield"].mean()
 
         # Compute annualized TSR with Bain method
         cumulative_tsr_bain = (final_price - beginning_price + cumulative_bbps + cumulative_dps)/beginning_price
@@ -114,13 +87,12 @@ for i in range(len(unique_tickers)):
         df_concise = pd.DataFrame({
             "Company": [company_name_i],
             "Ticker": [ticker_i],
-            "Annualized_TSR_Bain": [annualized_tsr_bain],
             "Annualized_TSR_CIQ": [annualized_tsr_ciq],
             "Avg_dividend_yield": [avg_dividend_yield],
             "Avg_buyback_yield": [avg_buyback_yield],
-            "EP/FE_final": [ep_fe_final],
+            "EVA_final": [eva_final],
             "Revenue_growth_final": [revenue_growth_final],
-            "Price_to_book_final": [price_to_book_final]
+            "Price_to_Book": [price_to_book_final]
         })
 
         # Append dictionary to storing list
@@ -138,12 +110,12 @@ df_flat.loc[:, ["Avg_dividend_yield", "Avg_buyback_yield"]] = df_flat.loc[:, ["A
 df_flat.loc[df_flat['Avg_dividend_yield'] > 1, 'Avg_dividend_yield'] = np.nan
 df_flat.loc[df_flat['Avg_buyback_yield'] > 1, 'Avg_buyback_yield'] = np.nan
 
-# Apply standard Genome Filtering
-if genome_filtering:
-    df_flat = df_flat.loc[(df_flat["EP/FE_final"] >= -.3) & (df_flat["EP/FE_final"] <= .5) &
-                                     (df_flat["Revenue_growth_final"] >= -.3) & (df_flat["Revenue_growth_final"] <= 1.5) &
-                                     (df_flat["Annualized_TSR_CIQ"] >= -.4) & (df_flat["Annualized_TSR_CIQ"] <= 1) &
-                                     (df_flat["Price_to_book_final"] > -200)]
+# # Apply standard Genome Filtering
+# if genome_filtering:
+#     df_flat = df_flat.loc[(df_flat["EVA_final"] >= -.3) & (df_flat["EVA_final"] <= .5) &
+#                                      (df_flat["Revenue_growth_final"] >= -.3) & (df_flat["Revenue_growth_final"] <= 1.5) &
+#                                      (df_flat["Annualized_TSR_CIQ"] >= -.4) & (df_flat["Annualized_TSR_CIQ"] <= 1) &
+#                                      (df_flat["Price_to_Book"] > -200)]
 
 if tsr_method == "capital_iq":
     # Remove all entries where TSR = -1
@@ -173,8 +145,7 @@ plt.legend()
 # Add labels and title
 plt.xlabel("Annualized TSR")
 plt.ylabel("Company ranking")
-plt.title(str(beginning_year) + "-" + str(end_year) + " Market TSR Quantiles")
-
+plt.title(plot_label + "_" + str(start_year) + "-" + str(end_year))
 # Show plot
-plt.savefig("Market_tsr_quantiles_"+tsr_method+"_"+str(beginning_year)+"-"+str(end_year))
+plt.savefig(plot_label + "_" + str(start_year) + "-" + str(end_year))
 plt.show()

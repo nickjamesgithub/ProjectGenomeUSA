@@ -17,9 +17,8 @@ genome_grid_initial = ["UNTENABLE", "TRAPPED", "BRAVE", "FEARLESS"]
 genome_grid_final = ["CHALLENGED", "VIRTUOUS", "FAMOUS", "LEGENDARY"]
 
 # Import data
-df = pd.read_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\USA_Journeys_summary.csv")
-df_slice = df.loc[(df["Genome_classification_beginning"].isin(genome_grid_initial)) & (df["Genome_classification_end"].isin(genome_grid_final))]
-
+df_full = pd.read_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\Journeys_summary_Global.csv")
+df_slice = df_full.loc[(df_full["Genome_classification_bespoke_beginning"].isin(genome_grid_initial)) & (df_full["Genome_classification_bespoke_end"].isin(genome_grid_final))]
 
 # Random Forest Fit
 X_drivers = ["Market_Capitalisation_beginning", "Market_Capitalisation_end",
@@ -27,7 +26,7 @@ X_drivers = ["Market_Capitalisation_beginning", "Market_Capitalisation_end",
                                 "Company_revenue_cagr", "Sector_revenue_cagr", "Delta_revenue_cagr",
                                 "Company_leverage", "Sector_leverage", "Delta_leverage",
                                 "Company_investment", "Sector_investment", "Delta_investment",
-                                "Company_EPFE_avg", "Sector_EPFE_avg", "delta_EPFE_avg",
+                                "Company_eva_avg", "Sector_eva_avg", "delta_eva_avg",
                                 "Company_acquisition_propensity", "Sector_acquisition_propensity", "delta_acquisition_propensity",
                                 "Company_capex/revenue", "Sector_capex/revenue", "Delta_capex/revenue",
                                 "Company_npat_per_employee", "Sector_npat_per_employee", "Delta_npat_per_employee",
