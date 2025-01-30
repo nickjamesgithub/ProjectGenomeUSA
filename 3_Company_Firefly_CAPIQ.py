@@ -5,57 +5,62 @@ import string
 from matplotlib.patches import Rectangle
 import matplotlib
 matplotlib.use('TkAgg')
-
 # Import data
 data = pd.read_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\global_platform_data\Global_data.csv")
 
-# Full ticker list
-full_ticker_list = ["NYSE:MMM", "NYSE:CAT", "NYSE:GE", "NasdaqGS:HON", "NasdaqGS:UAL"]
-ticker_list = data.loc[data["Ticker_full"].isin(full_ticker_list)]["Ticker"].unique()
-company_name_list = data.loc[data["Ticker_full"].isin(full_ticker_list)]["Company_name"].unique()
-plot_label = "Firefly_global"
+# Full ticker list and corresponding start/end years
+full_ticker_list = ["ASX:ANZ", "ASX:WBC", "ASX:CBA", "ASX:NAB"]
+start_years = [2017, 2013, 2015, 2022]
+end_years = [2024, 2020, 2022, 2024]
+plot_label = "SGH_vs_similar"
+
+# Extract company names before looping
+company_name_list = [data.loc[data["Ticker_full"] == ticker, "Company_name"].iloc[0] for ticker in full_ticker_list]
 
 x_axis_list = []
 y_axis_list = []
 labels_list = []
 
-for i in range(len(full_ticker_list)):
-    company, idx = full_ticker_list[i].split(":")
-    # Loop over companies & countries
-    country_i = data.loc[data["Ticker_full"]==full_ticker_list[i]]["Country"].values[0]
-    ticker_i = ticker_list[i]
-    # Update paths for raw data and share prices based on the country
-    df = pd.read_csv(fr"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\global_platform_data\{country_i}\_{ticker_i}.csv")
+for i, full_ticker in enumerate(full_ticker_list):
+    idx_i, company_i = full_ticker.split(":")
 
-    # Import data & slice specific company
-    company_slice = pd.read_csv(fr"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\global_platform_data\{country_i}\_{ticker_i}.csv")
+    # Retrieve the correct country for the ticker
+    country_i = data.loc[data["Ticker_full"] == full_ticker, "Country"].iloc[0]
 
-    # Engineer individual columns
-    labels = np.array(company_slice["Year"])
-    x_axis = np.array(company_slice["Revenue_growth_3_f"])
-    y_axis = np.array(company_slice["EVA_ratio_bespoke"])
+    # Load company data from the correct country subfolder
+    df = pd.read_csv(
+        fr"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\global_platform_data\{country_i}\_{company_i}.csv")
 
-    # Append results from all companies in a list
-    x_axis_list.append(list(x_axis))
-    y_axis_list.append(list(y_axis))
-    labels_list.append(list(labels))
+    # Filter for the selected time window
+    company_slice = df[(df["Year"] >= start_years[i]) & (df["Year"] <= end_years[i])]
+
+    # Extract relevant data
+    labels = company_slice["Year"].values
+    x_axis = company_slice["Revenue_growth_3_f"].values
+    y_axis = company_slice["EVA_ratio_bespoke"].values
+
+    # Append results
+    x_axis_list.append(x_axis.tolist())
+    y_axis_list.append(y_axis.tolist())
+    labels_list.append(labels.tolist())
 
 # Generate the grid for each axis
-x_pad = len(max(x_axis_list, key=len))
-x_fill_list = np.array([i + [0] * (x_pad - len(i)) for i in x_axis_list])
-y_pad = len(max(x_axis_list, key=len))
-y_fill_list = np.array([i + [0] * (y_pad - len(i)) for i in y_axis_list])
-labels_pad = len(max(labels_list, key=len))
-labels_fill_list = np.array([i + [0] * (labels_pad - len(i)) for i in labels_list])
+x_pad = max(map(len, x_axis_list))
+y_pad = max(map(len, y_axis_list))
+labels_pad = max(map(len, labels_list))
 
-x = np.linspace(np.min(np.nan_to_num(x_fill_list)), np.max(np.nan_to_num(x_fill_list)), 100)
-y = np.linspace(np.min(np.nan_to_num(y_fill_list)), np.max(np.nan_to_num(y_fill_list)), 100)
+x_fill_list = np.array([i + [np.nan] * (x_pad - len(i)) for i in x_axis_list])
+y_fill_list = np.array([i + [np.nan] * (y_pad - len(i)) for i in y_axis_list])
+labels_fill_list = np.array([i + [np.nan] * (labels_pad - len(i)) for i in labels_list])
+
+x = np.linspace(np.nanmin(x_fill_list), np.nanmax(x_fill_list), 100)
+y = np.linspace(np.nanmin(y_fill_list), np.nanmax(y_fill_list), 100)
 
 # Set automatic parameters for plotting
-x_lb = min(-.3, np.min(x))
-x_ub = max(.3, np.max(x))
-y_lb = min(-.3, np.min(y))
-y_ub = max(.3, np.max(y))
+x_lb = min(-.3, np.nanmin(x))
+x_ub = max(.3, np.nanmax(x))
+y_lb = min(-.3, np.nanmin(y))
+y_ub = max(.3, np.nanmax(y))
 
 x_segment_ranges = [(x_lb, 0), (0, .1), (.1, .2), (.2, x_ub)]
 y_segment_ranges = [(y_lb, 0), (0, y_ub)]
@@ -63,22 +68,24 @@ label_counter = 0
 labels = ["Untenable", "Challenged", "Trapped", "Virtuous", "Brave", "Famous", "Fearless", "Legendary"]
 
 fig, ax = plt.subplots()
+
+# Plot each company with proper labels
 for i in range(len(x_fill_list)):
-    # Generate plots
     if i == 0:
         plt.plot(x_axis_list[i], y_axis_list[i], '-o', label=company_name_list[i], color="blue")
-    # If we want a generic figure for all competitors, just do !=
-    if i != 0:
+    else:
         plt.plot(x_axis_list[i], y_axis_list[i], '-o', label=company_name_list[i], alpha=0.4, linestyle='--')
-    for j, txt in enumerate(labels_list[i]):
-        plt.annotate(labels_list[i][j], (x_axis_list[i][j], y_axis_list[i][j]), fontsize=6)
 
+    # Annotate with year labels
+    for j, txt in enumerate(labels_list[i]):
+        plt.annotate(txt, (x_axis_list[i][j], y_axis_list[i][j]), fontsize=6)
+
+# Draw segmented rectangles and add labels
 for x_range in x_segment_ranges:
     for y_range in y_segment_ranges:
         rect = Rectangle((x_range[0], y_range[0]), x_range[1] - x_range[0], y_range[1] - y_range[0],
                          linewidth=0.3, edgecolor='black', facecolor='red', alpha=0.5)
         ax.add_patch(rect)
-        # Add labels to each rectangle
         label = labels[label_counter]
         ax.text((x_range[0] + x_range[1]) / 2, (y_range[0] + y_range[1]) / 2, label,
                 ha='center', va='center', color='black', fontsize=8, fontweight='bold', rotation=15)
@@ -88,5 +95,6 @@ plt.title(plot_label)
 plt.xlabel("Revenue growth (3 year moving average)")
 plt.ylabel("EVA Ratio")
 plt.legend()
-plt.savefig(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\casework\USA_technology\Firefly_plot_CAPIQ_" + plot_label)
+plt.savefig(
+    r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\casework\USA_technology\Firefly_plot_CAPIQ_" + plot_label)
 plt.show()
