@@ -9,8 +9,8 @@ data = pd.read_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\globa
 plot_label = "XXX"
 
 # Define countries and sectors to include
-countries_to_include = ["AUS", "INDIA"] # 'USA', 'AUS', 'INDIA', 'JAPAN', 'EURO', 'UK'
-sectors_to_include = ['Healthcare']
+countries_to_include = ['USA', 'AUS', 'INDIA', 'JAPAN', 'EURO', 'UK'] # 'USA', 'AUS', 'INDIA', 'JAPAN', 'EURO', 'UK'
+sectors_to_include = ['Mining']
 
 # Filter data based on countries and sectors
 filtered_data = data.loc[(data['Country'].isin(countries_to_include)) & (data['Sector'].isin(sectors_to_include))]

@@ -9,10 +9,10 @@ matplotlib.use('TkAgg')
 data = pd.read_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\global_platform_data\Global_data.csv")
 
 # Full ticker list and corresponding start/end years
-full_ticker_list = ["ASX:ANZ", "ASX:WBC", "ASX:CBA", "ASX:NAB"]
-start_years = [2017, 2013, 2015, 2022]
-end_years = [2024, 2020, 2022, 2024]
-plot_label = "SGH_vs_similar"
+full_ticker_list = ["ASX:RIO"]
+start_years = [2013]
+end_years = [2024]
+plot_label = "RIO"
 
 # Extract company names before looping
 company_name_list = [data.loc[data["Ticker_full"] == ticker, "Company_name"].iloc[0] for ticker in full_ticker_list]

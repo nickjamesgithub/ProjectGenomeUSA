@@ -14,7 +14,7 @@ from sklearn.metrics.pairwise import cosine_distances
 matplotlib.use('TkAgg')
 
 # Algorithms to run
-run_similar = False
+run_similar = True
 run_firefly_plot = True
 
 if run_similar:
@@ -115,17 +115,15 @@ if run_similar:
     ])
 
 
-x=1
-y=2
 
 if run_firefly_plot:
     # Import data
     data = pd.read_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\global_platform_data\Global_data.csv")
 
     # Full ticker list and corresponding start/end years
-    full_ticker_list = ["ASX:SGH", "NYSE:DHR", "ASX:PRU", "ASX:PNI"]
-    start_years = [2017, 2015, 2017, 2016]
-    end_years = [2024, 2022, 2024, 2023]
+    full_ticker_list = ["ASX:SGH", "NYSE:DHR", "NasdaqGS:AXON", "LSE:DCC"]
+    start_years = [2017, 2015, 2011, 2017]
+    end_years = [2024, 2022, 2018, 2024]
     plot_label = "SGH_vs_similar"
 
     # Extract company names before looping

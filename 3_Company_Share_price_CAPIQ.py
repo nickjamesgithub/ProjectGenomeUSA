@@ -26,12 +26,12 @@ for i in range(len(full_ticker_list)):
     stock_i = pd.read_csv(fr"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\global_platform_data\share_price\{country_i}\_{ticker_i}_price.csv")
     # Get date and price
     stock_i_date = stock_i["Date"]
-    stock_i_price = stock_i["Price"]
+    stock_i_price = stock_i["Price"].fillna(method="bfill", limit=30)
     stock_i_price_adjusted = [float(i) for i in stock_i_price]
 
     # Plot adjusted close
-    log_returns = np.log(stock_i_price) - np.log(stock_i_price).shift(1)
-    rebased = 100 * np.exp(np.nan_to_num(log_returns.cumsum()))
+    log_returns = (np.log(stock_i_price) - np.log(stock_i_price).shift(1))
+    rebased = (100 * np.exp(np.nan_to_num(log_returns.cumsum())))
 
     # Plot date vs stock price
     plt.plot(stock_i_date, rebased, label = company_name_list[i])

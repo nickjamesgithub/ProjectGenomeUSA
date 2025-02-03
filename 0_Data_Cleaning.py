@@ -100,6 +100,3 @@ df_merge_uk = generate_bespoke_genome_classification_df(uk_df)
 # All country data merged
 df_merge_global = pd.concat([df_merge_usa, df_merge_aus, df_merge_india, df_merge_japan, df_merge_euro, df_merge_uk], axis=0)
 df_merge_global.to_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\global_platform_data\Global_data.csv")
-
-x=1
-y=2

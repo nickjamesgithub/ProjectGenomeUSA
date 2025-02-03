@@ -17,9 +17,9 @@ This is a script to compute the waterfall for an entire sector, or collection of
 # Import data
 data = pd.read_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\global_platform_data\Global_data.csv")
 # Define countries and sectors to include
-countries_to_include = ["JAPAN"] # 'USA', 'AUS', 'INDIA', 'JAPAN', 'EURO', 'UK'
-sectors_to_include = ['Healthcare', "Technology"]
-plot_label = "Japan_healthcare_tech"
+countries_to_include = ['USA', 'AUS', 'INDIA', 'JAPAN', 'EURO', 'UK'] # 'USA', 'AUS', 'INDIA', 'JAPAN', 'EURO', 'UK'
+sectors_to_include = ["Telecommunications"]
+plot_label = "Global_Telco"
 
 # Filter data based on countries and sectors
 df_merge = data.loc[(data['Country'].isin(countries_to_include)) & (data['Sector'].isin(sectors_to_include))]
