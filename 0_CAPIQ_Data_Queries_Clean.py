@@ -486,7 +486,7 @@ for c in range(len(country_list)):
             # Now get Adjusted Close Price & save separately
             req_array = [
                 {"Function": "GDST", "Identifier": company, "Mnemonic": "IQ_CLOSEPRICE_ADJ",
-                 "properties": {"frequency": "Daily", "startDate": "01/20/2019", "endDate": "01/20/2025","CurrencyID": "USD"}}]
+                 "properties": {"frequency": "Daily", "startDate": "02/02/2019", "endDate": "02/02/2025","CurrencyID": "USD"}}]
 
             req = {"inputRequests": req_array}
             response = requests.post(endpoint_url,

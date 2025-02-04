@@ -238,6 +238,11 @@ def value_creation_waterfall(df_initial, df_final, init_year, final_year):
     fy_final_market_cap = df_final["Market_Capitalisation"].sum()
     fy_final_revenue = df_final["Revenue"].sum()
     fy_final_npat = df_final["NPAT"].sum()
+
+    # Ensure NPAT values are not zero or negative to avoid division errors
+    if fy_final_npat <= 0 or df_initial["NPAT"].sum() <= 0:
+        raise ValueError("Unable to compute valid waterfall due to negative aggregate market earnings")
+
     fy_final_margin = fy_final_npat / fy_final_revenue
     fy_final_market_pe = fy_final_market_cap / fy_final_npat
 
@@ -248,6 +253,10 @@ def value_creation_waterfall(df_initial, df_final, init_year, final_year):
     fy_initial_margin = fy_initial_npat / fy_initial_revenue
     fy_initial_market_pe = fy_initial_market_cap / fy_initial_npat
 
+    # Check for negative or zero P/E ratios before proceeding
+    if fy_initial_market_pe <= 0 or fy_final_market_pe <= 0:
+        raise ValueError("Unable to compute valid waterfall due to negative aggregate market earnings")
+
     # Calculate incremental values
     incremental_revenue = (fy_final_revenue - fy_initial_revenue) * fy_initial_margin * fy_initial_market_pe
     incremental_margin = fy_final_revenue * (fy_final_margin - fy_initial_margin) * fy_initial_market_pe
@@ -257,8 +266,7 @@ def value_creation_waterfall(df_initial, df_final, init_year, final_year):
     total_change = fy_final_market_cap - fy_initial_market_cap
 
     # Verify that the total incremental values add up to the total change
-    assert round(incremental_revenue + incremental_margin + incremental_pe, 2) == round(total_change,
-                                                                                        2), "Incremental values do not sum up to total change."
+    assert round(incremental_revenue + incremental_margin + incremental_pe, 2) == round(total_change, 2), "Incremental values do not sum up to total change."
 
     # Create waterfall chart
     components = ['Initial Equity Market Value', 'Revenue Growth', 'Margin Change', 'Multiple Change', 'Final Equity Market Value']
@@ -282,10 +290,8 @@ def value_creation_waterfall(df_initial, df_final, init_year, final_year):
     ax.set_xticks(range(len(components)))
     ax.set_xticklabels(components)
     ax.set_ylabel('Market Value')
-    ax.set_title('Waterfall Chart of Market Value Changes:' + str(init_year) + "-" + str(final_year))
+    ax.set_title('Waterfall Chart of Market Value Changes: ' + str(init_year) + "-" + str(final_year))
     plt.xticks(rotation=45)
     plt.tight_layout()
     plt.savefig("Market_Value_Waterfall")
     plt.show()
-
-# def
