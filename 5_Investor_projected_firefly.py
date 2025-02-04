@@ -7,11 +7,11 @@ matplotlib.use('TkAgg')
 from sklearn.cluster import KMeans
 
 # Import data & slice specific company
-company_slice = pd.read_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\platform_data_2025\_CBA.csv")
+company_slice = pd.read_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\platform_data_2025\_ORG.csv")
 # Slice the sector
 sector = company_slice["Sector"].values[0]
-company_list = ["CBA"]
-plot_label = "CBA_projected_firefly"
+company_list = ["ORG"]
+plot_label = "ORG_projected_firefly"
 scenario = "N/A" # north, east, north_east
 excel_output = True
 
@@ -29,12 +29,12 @@ if sector not in crote_sectors:
     year_append = [2025, 2026, 2027]
 
     # THESE ARE BUTTONS TO FILL IN DIRECTLY ON THE PLATFORM
-    revenue_growth_market = [-.4 / 100, 2.8 / 100, 3.5 / 100]  # Revenue growth still inferred
-    assets_forecasts = [15685.5, 15980.5, 16629]  # Direct input for asset values
-    liabilities_forecasts = [10042, 10034.5, 10282]  # Direct input for liability values
-    npat_market = [628, 669.5, 808.5]  # Direct input for NPAT
+    revenue_growth_market = [-.4 / 100, -3.1/ 100, 1.9 / 100]  # Revenue growth still inferred
+    assets_forecasts = [19841.5, 19085.5, 21238]  # Direct input for asset values
+    liabilities_forecasts = [9511.5, 8882, 10759]  # Direct input for liability values
+    npat_market = [1614, 1045, 1061]  # Direct input for NPAT
     cost_of_capital_forecasts = [0.07, 0.07, 0.07]  # Used for economic profit
-    non_interest_debt_percentage_liabilities = [0.24, 0.24, 0.24]  # User-defined percentage
+    non_interest_debt_percentage_liabilities = [0.22, 0.22, 0.22]  # User-defined percentage
 
     # Initialize projections lists with the first year's values
     revenue_projections = [fy_24_revenue]

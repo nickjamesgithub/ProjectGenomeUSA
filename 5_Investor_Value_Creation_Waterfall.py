@@ -29,8 +29,8 @@ year_init = 2018
 year_final = 2023
 
 # Define genome classifications for filtering
-genome_classification_init = ["FEARLESS", "BRAVE"]
-genome_classification_final = ["LEGENDARY", "FAMOUS"]
+genome_classification_init = ["CHALLENGED", "UNTENABLE", "VIRTUOUS", "TRAPPED"]
+genome_classification_final = ["FAMOUS", "BRAVE", "FEARLESS", "LEGENDARY"]
 
 # Filter data for initial and final years based on specific criteria
 df_init = df_slice.loc[(df_slice["Year"] == year_init) &

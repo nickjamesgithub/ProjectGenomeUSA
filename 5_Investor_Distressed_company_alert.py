@@ -2,11 +2,50 @@ import os
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib
+from scipy.signal import savgol_filter
+
+matplotlib.use('TkAgg')
 
 # Global parameters
 window = 250
 
-# Define autocorrelation function
+# Define a dictionary to map specific sectors to the y-axis metric, with others defaulting to "EP/FE"
+sector_metric_mapping = {
+    "Banking": "CROTE_TE",
+    "Investment and Wealth": "ROE_above_Cost_of_equity",
+    "Insurance": "ROE_above_Cost_of_equity",
+    "Financials - other": "ROE_above_Cost_of_equity",
+    # Other sectors will use "EP/FE" by default
+}
+
+# Function to process genome classification
+def generate_bespoke_genome_classification_df(df):
+    for sector, metric in sector_metric_mapping.items():
+        if metric not in df.columns:
+            raise ValueError(f"Missing required metric '{metric}' in DataFrame for sector '{sector}'.")
+    classified_dfs = []
+    for sector in df["Sector"].unique():
+        metric = sector_metric_mapping.get(sector, "EP/FE")
+        if metric not in df.columns:
+            continue
+        sector_df = df[df["Sector"] == sector].copy()
+        conditions_genome = [
+            (sector_df[metric] < 0) & (sector_df["Revenue_growth_3_f"] < 0),
+            (sector_df[metric] < 0) & (sector_df["Revenue_growth_3_f"].between(0, 0.10, inclusive='right')),
+            (sector_df[metric] < 0) & (sector_df["Revenue_growth_3_f"].between(0.10, 0.20, inclusive='right')),
+            (sector_df[metric] < 0) & (sector_df["Revenue_growth_3_f"] >= 0.20),
+            (sector_df[metric] > 0) & (sector_df["Revenue_growth_3_f"] < 0),
+            (sector_df[metric] > 0) & (sector_df["Revenue_growth_3_f"].between(0, 0.10, inclusive='right')),
+            (sector_df[metric] > 0) & (sector_df["Revenue_growth_3_f"].between(0.10, 0.20, inclusive='right')),
+            (sector_df[metric] > 0) & (sector_df["Revenue_growth_3_f"] >= 0.20)
+        ]
+        values_genome = ["UNTENABLE", "TRAPPED", "BRAVE", "FEARLESS", "CHALLENGED", "VIRTUOUS", "FAMOUS", "LEGENDARY"]
+        sector_df["Genome_classification_bespoke"] = np.select(conditions_genome, values_genome, default="UNKNOWN")
+        classified_dfs.append(sector_df)
+    return pd.concat(classified_dfs)
+
+# Define autocorrelation function and financial metrics functions
 def autocorrelation_function(returns, window):
     up_days = len([x for x in returns[-window:] if x > 0])
     down_days = len([x for x in returns[-window:] if x <= 0])
@@ -20,133 +59,91 @@ def downside_risk(returns, risk_free=0):
 def sortino(returns, risk_free=0):
     adj_returns = returns - risk_free
     drisk = downside_risk(adj_returns)
-
     if drisk == 0:
         return np.nan
+    return (np.nanmean(adj_returns) * np.sqrt(252)) / drisk
 
-    return (np.nanmean(adj_returns) * np.sqrt(252)) \
-        / drisk
+def compute_sharpe_ratio(log_returns, risk_free_rate=0.01):
+    mean_log_return_annual = np.nanmean(log_returns) * 252
+    std_dev_log_return_annual = np.nanstd(log_returns) * np.sqrt(252)
+    if std_dev_log_return_annual > 0:
+        sharpe_ratio = (mean_log_return_annual - risk_free_rate) / std_dev_log_return_annual
+    else:
+        sharpe_ratio = np.nan
+    return sharpe_ratio
 
-def generate_genome_classification_df(df):
-    # Conditions EP/FE
-    conditions_genome = [
-        (df["EP/FE"] < 0) & (df["Revenue_growth_3_f"] < 0),
-        (df["EP/FE"] < 0) & (df["Revenue_growth_3_f"].between(0, 0.10, inclusive='right')),
-        (df["EP/FE"] < 0) & (df["Revenue_growth_3_f"].between(0.10, 0.20, inclusive='right')),
-        (df["EP/FE"] < 0) & (df["Revenue_growth_3_f"] >= 0.20),
-        (df["EP/FE"] > 0) & (df["Revenue_growth_3_f"] < 0),
-        (df["EP/FE"] > 0) & (df["Revenue_growth_3_f"].between(0, 0.10, inclusive='right')),
-        (df["EP/FE"] > 0) & (df["Revenue_growth_3_f"].between(0.10, 0.20, inclusive='right')),
-        (df["EP/FE"] > 0) & (df["Revenue_growth_3_f"] >= 0.20)
-    ]
+# Import data
+data = pd.read_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\global_platform_data\Global_data.csv")
 
-    # Values to display
-    values_genome = ["UNTENABLE", "TRAPPED", "BRAVE", "FEARLESS", "CHALLENGED", "VIRTUOUS", "FAMOUS", "LEGENDARY"]
+# Define countries and sectors to include
+countries_to_include = ['USA', 'AUS', 'INDIA', 'JAPAN', 'EURO', 'UK']
+sectors_to_include = data["Sector"].unique()
 
-    df["Genome_classification"] = np.select(conditions_genome, values_genome)
+# Filter data based on countries and sectors
+filtered_data = data.loc[(data['Country'].isin(countries_to_include)) & (data['Sector'].isin(sectors_to_include))]
+tickers_ = np.unique(filtered_data["Ticker"].values)
 
-    return df
-
-def merge_csv_files_with_ticker(directory_path):
-    # List to hold the DataFrames
-    dataframes = []
-
-    # Iterate through all files in the directory
-    for filename in os.listdir(directory_path):
-        # Check if the file is a CSV
-        if filename.endswith('.csv'):
-            file_path = os.path.join(directory_path, filename)
-            # Read the CSV file into a DataFrame
-            df = pd.read_csv(file_path)
-            # Extract the ticker from the filename (everything after and before the two "_")
-            parts = filename.split('_')
-            if len(parts) > 2:
-                ticker = parts[1]  # Assuming the ticker is always the second part
-            else:
-                ticker = parts[0].replace('.csv', '')  # Fallback in case the format is not as expected
-            # Add the ticker as a new column
-            df['Ticker'] = ticker
-            # Append the DataFrame to the list
-            dataframes.append(df)
-
-    # Concatenate all DataFrames
-    combined_df = pd.concat(dataframes, ignore_index=True)
-    return combined_df
-
-def merge_csv_files(directory_path):
-    # List to hold the DataFrames
-    dataframes = []
-
-    # Iterate through all files in the directory
-    for filename in os.listdir(directory_path):
-        # Check if the file is a CSV
-        if filename.endswith('.csv'):
-            file_path = os.path.join(directory_path, filename)
-            # Read the CSV file into a DataFrame
-            df = pd.read_csv(file_path)
-            # Append the DataFrame to the list
-            dataframes.append(df)
-
-    # Concatenate all DataFrames
-    combined_df = pd.concat(dataframes, ignore_index=True)
-    return combined_df
-
-# Import mapping data
-mapping_data = pd.read_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\Company_list_GPT_SP500.csv")
-# full_ticker_list = ticker_list = mapping_data["Full Ticker"].values
-
-# Example usage
-directory_path_prices = r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\USA_platform_data\share_price"
-directory_path = r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\USA_platform_data"
-
-# Prices dataframe merged with tickers
-prices_df = merge_csv_files_with_ticker(directory_path_prices)
-df = merge_csv_files(directory_path)
-
-# Append Genome data to financial dataframe
-df = generate_genome_classification_df(df)
-
-# Loop over tickers and find tickers that satisfy criteria
-unique_tickers = prices_df["Ticker"].unique()
+# Store features
 features_list = []
-for i in range(len(unique_tickers)):
-    # Iteration i
-    print("Iteration ", i, " ", unique_tickers[i])
+for i in range(len(tickers_)):
+    company_i = tickers_[i]
     try:
-        # Slice financial data for company i
-        df["Ticker"] = df["Ticker"].astype(str)
-        company_i = df.loc[df["Ticker"]==unique_tickers[i]]
-        genome_class_i_trailing_2 = company_i.loc[company_i["Year"] == 2022]["Genome_classification"].iloc[0]
-        genome_class_i_trailing = company_i.loc[company_i["Year"] == 2023]["Genome_classification"].iloc[0]
-        genome_class_i_current = company_i.loc[company_i["Year"]==2024]["Genome_classification"].iloc[0]
-        company_name_i = company_i.loc[company_i["Year"]==2024]["Company_name"].iloc[0]
+        country_i = filtered_data.loc[filtered_data["Ticker"] == company_i, "Country"].values[0]
+        sector_i = filtered_data.loc[filtered_data["Ticker"] == company_i, "Sector"].values[0]
+        name_i = filtered_data.loc[filtered_data["Ticker"] == company_i, "Company_name"].values[0]
+        df_path = fr"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\global_platform_data\{country_i}\_{company_i}.csv"
+        price_path = fr"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\global_platform_data\share_price\{country_i}\_{company_i}_price.csv"
+        print("Iteration ", name_i)
 
-        # Get the last 1 year of trading data
-        slice_i = prices_df.loc[prices_df["Ticker"]==unique_tickers[i]].iloc[-window:,1:]
-        slice_i["Log_returns"] = np.log(slice_i["Price"]) - np.log(slice_i["Price"].shift(1))
-        log_returns_i = slice_i["Log_returns"]
+        # Read the data files
+        df = pd.read_csv(df_path)
+        price_df = pd.read_csv(price_path)
 
-        # Compute autocorrelation function on log returns
-        downs, ups = autocorrelation_function(log_returns_i, window)
+        df_g = generate_bespoke_genome_classification_df(df)
+
+        genome_class_i_current = df_g.loc[df_g['Year'] == 2024, 'Genome_classification_bespoke'].values[0] if not df_g.loc[df_g['Year'] == 2024, 'Genome_classification_bespoke'].empty else 'N/A'
+        genome_class_i_trailing = df_g.loc[df_g['Year'] == 2023, 'Genome_classification_bespoke'].values[0] if not df_g.loc[df_g['Year'] == 2023, 'Genome_classification_bespoke'].empty else 'N/A'
+        genome_class_i_trailing_2 = df_g.loc[df_g['Year'] == 2022, 'Genome_classification_bespoke'].values[0] if not df_g.loc[df_g['Year'] == 2022, 'Genome_classification_bespoke'].empty else 'N/A'
+
+        # Compute price information
+        price = price_df["Price"].iloc[-window:]
+        log_returns = np.log(price) - np.log(price.shift(1))
+
+        # Apply Savitzky-Golay filter for smoothing
+        if len(price) >= 31:  # Check if the data has enough points to apply the filter
+            smoothed_prices = savgol_filter(price, window_length=31, polyorder=2)
+            # Assuming 'smoothed_prices' has already been calculated using the Savitzky-Golay filter
+            # Function to compute velocity as the rate of change over a specified number of days
+            def compute_velocity(prices, days):
+                if len(prices) >= days:
+                    return (prices[-1] - prices[-days]) / prices[-days]
+                else:
+                    return np.nan  # Return NaN if there aren't enough days of data
+
+            # Compute velocities
+            velocity_10 = compute_velocity(smoothed_prices, 10)
+            velocity_30 = compute_velocity(smoothed_prices, 30)
+            velocity_60 = compute_velocity(smoothed_prices, 60)
+
+        # Compute financial metrics
+        downs, ups = autocorrelation_function(log_returns, window)
         down_ratio = np.nan_to_num(downs / ups)
+        total_returns_window = np.nan_to_num(np.sum(log_returns))
+        volatility_window = np.nanstd(log_returns) * np.sqrt(252)
+        sharpe = compute_sharpe_ratio(log_returns.dropna(), risk_free_rate=0.0)
+        sortino_r = sortino(log_returns, 0)
 
-        # Compute total returns
-        total_returns_window = np.nan_to_num(np.sum(log_returns_i))
-        # Compute volatility
-        volatility_window = np.nan_to_num(np.std(log_returns_i))
-        # Compute Sharpe Ratio
-        sharpe = np.nan_to_num(total_returns_window / volatility_window)
-        # Sortino Ratio
-        sortino_r = sortino(log_returns_i, 0)
         # Append features to feature list
-        features_list.append([company_name_i, unique_tickers[i], genome_class_i_current, genome_class_i_trailing, genome_class_i_trailing_2,
-                              total_returns_window, down_ratio, sharpe, sortino_r])
+        features_list.append([name_i, country_i, sector_i, genome_class_i_current, genome_class_i_trailing, genome_class_i_trailing_2,
+                              total_returns_window, volatility_window, down_ratio, sharpe, sortino_r, velocity_10, velocity_30, velocity_60])
 
-    except:
-        print("Error with company ", unique_tickers[i])
+    except Exception as e:
+        print(f"Error with company {company_i}: {e}")
 
-# Make a dataframe and append columns
+# Generate features DataFrame
 features_df = pd.DataFrame(features_list)
-features_df.columns = ["Company_name", "Ticker", "Genome_segment_24", "Genome_segment_23", "Genome_segment_22", "Total_returns", "Down_ratio", "Sharpe_ratio", "Sortino_ratio"]
+features_df.columns = ["Company_name", "Country", "Sector", "Genome_class_2024", "Genome_class_2023", "Genome_class_2022", "Total_returns", "Volatility", "Down_ratio", "Sharpe", "Sortino", "Velocity_10", "Velocity_30", "Velocity_60"]
 features_df.to_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\Market_updates\USA_distressed_flag.csv")
 
+x=1
+y=2
