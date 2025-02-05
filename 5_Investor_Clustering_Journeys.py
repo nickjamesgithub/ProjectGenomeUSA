@@ -14,8 +14,9 @@ from sklearn.metrics.pairwise import cosine_distances
 matplotlib.use('TkAgg')
 
 # Algorithms to run
-run_similar = True
-run_firefly_plot = True
+run_similar = False
+run_defined_trajectory = True
+run_firefly_plot = False
 
 if run_similar:
     # Read the data
@@ -114,7 +115,66 @@ if run_similar:
         "Distance", "Anchor_Genome_Sequence", "Comparison_Genome_Sequence"
     ])
 
+if run_defined_trajectory:
+    # Read the data
+    df_full = pd.read_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\global_platform_data\Global_data.csv")
 
+    # Parameters
+    time_window_length = 5  # Define the time window length
+    country_list = ["USA", 'AUS', 'INDIA', 'JAPAN', 'EURO', 'UK']
+    unique_sectors = df_full["Sector"].unique()
+
+    # Filter by Country and Sector
+    df = df_full[(df_full['Country'].isin(country_list)) & (df_full["Sector"].isin(unique_sectors))]
+
+    # Define potential Genome classifications for each year in the sequence
+    # Example format: {year_offset: [possible_genomes]}
+    # year_offset is 0 for the first year in the sequence, 1 for the second, etc.
+    genome_options = {
+        0: ["UNTENABLE", "TRAPPED"],
+        1: ["UNTENABLE" , "TRAPPED"],
+        2: ["CHALLENGED", "VIRTUOUS"],
+        3: ["VIRTUOUS", "FAMOUS"],
+        4: ["FAMOUS", "LEGENDARY"]
+    }
+
+    # Function to check if the sequence in the DataFrame matches any of the allowed sequences
+    def matches_allowed_sequence(df_sequence):
+        for year_offset, allowed_genomes in genome_options.items():
+            if df_sequence.iloc[year_offset]["Genome_classification_bespoke"] not in allowed_genomes:
+                return False
+        return True
+
+
+    # Scan over each ticker
+    results = []
+    tickers = df["Ticker_full"].unique()
+
+    for ticker in tickers:
+        ticker_data = df[df["Ticker_full"] == ticker]
+        years = sorted(ticker_data["Year"].unique())
+
+        # Check each possible starting year within the range that allows a full sequence
+        for start_year in years:
+            if start_year + time_window_length - 1 in years:  # Ensure the sequence can be complete
+                sequence_df = ticker_data[
+                    (ticker_data["Year"] >= start_year) & (ticker_data["Year"] < start_year + time_window_length)]
+                if len(sequence_df) == time_window_length:  # Ensure no missing years in the sequence
+                    if matches_allowed_sequence(sequence_df):
+                        results.append({
+                            "Ticker": ticker,
+                            "Company Name": sequence_df["Company_name"].iloc[0],
+                            "Start Year": start_year,
+                            "End Year": start_year + time_window_length - 1,
+                            "Genome Sequence": sequence_df["Genome_classification_bespoke"].tolist()
+                        })
+
+    # Convert results to DataFrame
+    results_df = pd.DataFrame(results)
+    print(results_df)
+
+    X=1
+    Y=2
 
 if run_firefly_plot:
     # Import data
@@ -210,3 +270,5 @@ if run_firefly_plot:
     plt.savefig(
         r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\casework\USA_technology\Firefly_plot_CAPIQ_" + plot_label)
     plt.show()
+
+

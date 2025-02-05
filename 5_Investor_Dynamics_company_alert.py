@@ -144,3 +144,6 @@ for i in range(len(tickers_)):
 features_df = pd.DataFrame(features_list)
 features_df.columns = ["Company_name", "Country", "Sector", "Genome_class_2024", "Genome_class_2023", "Genome_class_2022", "Total_returns", "Volatility", "Down_ratio", "Sharpe", "Sortino", "Velocity_10", "Velocity_30", "Velocity_60"]
 features_df.to_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\Market_updates\Global_dynamics_alert_flag.csv")
+
+x=1
+y=2

@@ -10,10 +10,11 @@ plot_label = "XXX"
 
 # Define countries and sectors to include
 countries_to_include = ['USA', 'AUS', 'INDIA', 'JAPAN', 'EURO', 'UK'] # 'USA', 'AUS', 'INDIA', 'JAPAN', 'EURO', 'UK'
-sectors_to_include = ['Mining']
+sectors_to_include = ['Banking']
 
 # Filter data based on countries and sectors
 filtered_data = data.loc[(data['Country'].isin(countries_to_include)) & (data['Sector'].isin(sectors_to_include))]
+genome_criteria = filtered_data.loc[filtered_data["Year"].isin([2023, 2024])][["Company_name","Year", "EVA_ratio_bespoke", "Revenue_growth_3_f"]]
 
 # Required tickers
 tickers_ = np.unique(filtered_data["Ticker"].values)
