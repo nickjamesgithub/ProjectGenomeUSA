@@ -80,3 +80,6 @@ column_names = ["Company_name", "Country", "Sector", f"Revenue_growth_{start_yea
 
 # Create a dataframe to store the results
 df_features = pd.DataFrame(features_list, columns=column_names)
+
+x=1
+y=2

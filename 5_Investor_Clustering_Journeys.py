@@ -115,12 +115,13 @@ if run_similar:
         "Distance", "Anchor_Genome_Sequence", "Comparison_Genome_Sequence"
     ])
 
+
 if run_defined_trajectory:
     # Read the data
     df_full = pd.read_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\global_platform_data\Global_data.csv")
 
     # Parameters
-    time_window_length = 5  # Define the time window length
+    time_window_length = 6  # Define the time window length
     country_list = ["USA", 'AUS', 'INDIA', 'JAPAN', 'EURO', 'UK']
     unique_sectors = df_full["Sector"].unique()
 
@@ -131,11 +132,12 @@ if run_defined_trajectory:
     # Example format: {year_offset: [possible_genomes]}
     # year_offset is 0 for the first year in the sequence, 1 for the second, etc.
     genome_options = {
-        0: ["UNTENABLE", "TRAPPED"],
-        1: ["UNTENABLE" , "TRAPPED"],
-        2: ["CHALLENGED", "VIRTUOUS"],
+        0: ["UNTENABLE", "UNTENABLE"],
+        1: ["UNTENABLE" , "CHALLENGED"],
+        2: ["CHALLENGED" , "VIRTUOUS"],
         3: ["VIRTUOUS", "FAMOUS"],
-        4: ["FAMOUS", "LEGENDARY"]
+        4: ["FAMOUS", "LEGENDARY"],
+        5: ["FAMOUS", "LEGENDARY"]
     }
 
     # Function to check if the sequence in the DataFrame matches any of the allowed sequences
@@ -151,6 +153,7 @@ if run_defined_trajectory:
     tickers = df["Ticker_full"].unique()
 
     for ticker in tickers:
+        print("Iteration ", ticker)
         ticker_data = df[df["Ticker_full"] == ticker]
         years = sorted(ticker_data["Year"].unique())
 
@@ -173,18 +176,15 @@ if run_defined_trajectory:
     results_df = pd.DataFrame(results)
     print(results_df)
 
-    X=1
-    Y=2
-
 if run_firefly_plot:
     # Import data
     data = pd.read_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\global_platform_data\Global_data.csv")
 
     # Full ticker list and corresponding start/end years
-    full_ticker_list = ["ASX:SGH", "NYSE:DHR", "NasdaqGS:AXON", "LSE:DCC"]
-    start_years = [2017, 2015, 2011, 2017]
-    end_years = [2024, 2022, 2018, 2024]
-    plot_label = "SGH_vs_similar"
+    full_ticker_list = ["NasdaqGS:ADI", "ASX:PNI", "TSE:8031", "NYSE:CAG"]
+    start_years = [2013, 2014, 2011, 2015]
+    end_years = [2018, 2019, 2018, 2021]
+    plot_label = "Aspirational_turnaround_firefly"
 
     # Extract company names before looping
     company_name_list = [data.loc[data["Ticker_full"] == ticker, "Company_name"].iloc[0] for ticker in full_ticker_list]

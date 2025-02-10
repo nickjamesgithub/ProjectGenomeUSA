@@ -14,19 +14,16 @@ This is a tool to compute an evolutionary Firefly at the market level
 data = pd.read_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\global_platform_data\Global_data.csv")
 
 # Choose loop configuration: "countries", "sectors", "countries_and_sectors"
-loop_mode = "countries"  # Options: "countries", "sectors", "countries_and_sectors"
+loop_mode = "sectors"  # Options: "countries", "sectors", "countries_and_sectors"
 
 # Define countries and sectors to include
-countries_to_include = ['USA', 'AUS', 'INDIA', 'JAPAN', 'EURO', 'UK']  # 'USA', 'AUS', 'INDIA', 'JAPAN', 'EURO', 'UK'
-sectors_to_include = ['Industrials', 'Materials', 'Healthcare', 'Technology',
-       'Insurance', 'Gaming/alcohol', 'Media', 'REIT', 'Utilities',
-       'Consumer staples', 'Consumer Discretionary',
-       'Investment and Wealth', 'Telecommunications', 'Energy', 'Banking',
-       'Metals', 'Financials - other', 'Mining', 'Consumer Staples',
-       'Diversified', 'Rail Transportation', 'Transportation']
-
+countries_to_include = ['USA']  # 'USA', 'AUS', 'INDIA', 'JAPAN', 'EURO', 'UK'
+sectors_to_include = ["Technology"]
 # 'Industrials', 'Materials', 'Healthcare', 'Technology','Insurance', 'Gaming/alcohol', 'Media', 'REIT', 'Utilities', 'Consumer staples', 'Consumer Discretionary',
 # 'Investment and Wealth', 'Telecommunications', 'Energy', 'Banking', 'Metals', 'Financials - other', 'Mining', 'Consumer Staples', 'Diversified', 'Rail Transportation', 'Transportation'
+
+uniform_weighting = True
+market_cap_weighting = False
 
 # Adjust loop targets based on mode
 if loop_mode == "countries":
@@ -91,10 +88,16 @@ for target in loop_targets:
         # Compute weighted contribution vectors
         mcap_total = np.sum(market_cap_vector)
         mcap_weighted = market_cap_vector / mcap_total if mcap_total != 0 else np.zeros_like(market_cap_vector)
+        uniform = np.ones(len(eva_ratio_bespoke))/np.sum(np.ones(len(eva_ratio_bespoke)))
 
         # Weighted contribution for each feature
-        revenue_rolling_weighted = np.dot(mcap_weighted, revenue_rolling_vector)
-        eva_ratio_weighted = np.dot(mcap_weighted, eva_ratio_bespoke)
+        if market_cap_weighting:
+            revenue_rolling_weighted = np.dot(mcap_weighted, revenue_rolling_vector)
+            eva_ratio_weighted = np.dot(mcap_weighted, eva_ratio_bespoke)
+        
+        if uniform_weighting:
+            revenue_rolling_weighted = np.dot(uniform, revenue_rolling_vector)
+            eva_ratio_weighted = np.dot(uniform, eva_ratio_bespoke)
 
         # Append totals for plotting
         x_axis_list.append(revenue_rolling_weighted)

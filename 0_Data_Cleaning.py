@@ -6,6 +6,8 @@ import matplotlib
 import numpy as np
 import matplotlib.pyplot as plt
 matplotlib.use('TkAgg')
+import os
+import pandas as pd
 
 # Define a dictionary to map specific sectors to the y-axis metric, with others defaulting to "EP/FE"
 sector_metric_mapping = {
@@ -24,20 +26,20 @@ def generate_bespoke_genome_classification_df(df):
 
     classified_dfs = []
     for sector in df["Sector"].unique():
-        metric = sector_metric_mapping.get(sector, "EP/FE")
+        metric = sector_metric_mapping.get(sector, "EVA_ratio_bespoke")
         if metric not in df.columns:
             continue
 
         sector_df = df[df["Sector"] == sector].copy()
         conditions_genome = [
-            (sector_df[metric] < 0) & (sector_df["Revenue_growth_3_f"] < 0),
-            (sector_df[metric] < 0) & (sector_df["Revenue_growth_3_f"].between(0, 0.10, inclusive='right')),
-            (sector_df[metric] < 0) & (sector_df["Revenue_growth_3_f"].between(0.10, 0.20, inclusive='right')),
-            (sector_df[metric] < 0) & (sector_df["Revenue_growth_3_f"] >= 0.20),
-            (sector_df[metric] > 0) & (sector_df["Revenue_growth_3_f"] < 0),
-            (sector_df[metric] > 0) & (sector_df["Revenue_growth_3_f"].between(0, 0.10, inclusive='right')),
-            (sector_df[metric] > 0) & (sector_df["Revenue_growth_3_f"].between(0.10, 0.20, inclusive='right')),
-            (sector_df[metric] > 0) & (sector_df["Revenue_growth_3_f"] >= 0.20)
+            (sector_df["EVA_ratio_bespoke"] < 0) & (sector_df["Revenue_growth_3_f"] < 0),
+            (sector_df["EVA_ratio_bespoke"] < 0) & (sector_df["Revenue_growth_3_f"].between(0, 0.10, inclusive='right')),
+            (sector_df["EVA_ratio_bespoke"] < 0) & (sector_df["Revenue_growth_3_f"].between(0.10, 0.20, inclusive='right')),
+            (sector_df["EVA_ratio_bespoke"] < 0) & (sector_df["Revenue_growth_3_f"] >= 0.20),
+            (sector_df["EVA_ratio_bespoke"] > 0) & (sector_df["Revenue_growth_3_f"] < 0),
+            (sector_df["EVA_ratio_bespoke"] > 0) & (sector_df["Revenue_growth_3_f"].between(0, 0.10, inclusive='right')),
+            (sector_df["EVA_ratio_bespoke"] > 0) & (sector_df["Revenue_growth_3_f"].between(0.10, 0.20, inclusive='right')),
+            (sector_df["EVA_ratio_bespoke"] > 0) & (sector_df["Revenue_growth_3_f"] >= 0.20)
         ]
 
         values_genome = ["UNTENABLE", "TRAPPED", "BRAVE", "FEARLESS", "CHALLENGED", "VIRTUOUS", "FAMOUS", "LEGENDARY"]
@@ -61,9 +63,6 @@ india_tickers_ = india_mapping_data["Ticker"].unique()
 japan_tickers_ = japan_mapping_data["Ticker"].unique()
 europe_tickers_ = europe_mapping_data["Ticker"].unique()
 uk_tickers_ = uk_mapping_data["Ticker"].unique()
-
-import os
-import pandas as pd
 
 base_dir = r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\global_platform_data"
 country_dirs = ["USA", "AUS", "INDIA", "JAPAN", "EURO", "UK"]
