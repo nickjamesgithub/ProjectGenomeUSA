@@ -6,7 +6,7 @@ import pandas as pd
 import numpy as np
 import os  # Ensure this is imported at the top
 
-country_list = ["JAPAN", "EURO", "UK", "USA", "AUS", "INDIA"] # "INDIA", "JAPAN", "EURO", "UK", "USA", "AUS"
+country_list = ["AUS"] # "INDIA", "JAPAN", "EURO", "UK", "USA", "AUS"
 # Define the base directory where you want to save the files
 base_directory = r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\global_platform_data"
 
@@ -30,6 +30,7 @@ for c in range(len(country_list)):
 
     # WACC data
     wacc_store = pd.read_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\WACC_inputs\WACC_Store_2011_2024.csv")
+
     # Ticker data
     full_ticker_list = mapping_data["Full Ticker"].values
     ticker_slice_list = mapping_data["Ticker"].values
@@ -50,7 +51,7 @@ for c in range(len(country_list)):
             company_label = company_ticker
             endpoint_url = "https://api-ciq.marketintelligence.spglobal.com/gdsapi/rest/v3/clientservice.json"
 
-            labels = ["Beta", "Market_Capitalisation", "PE", "PBV", "Adjusted_Stock_Price", "Stock_Price",
+            labels = ["Beta", "Enterprise_Value", "Market_Capitalisation", "PE", "PBV", "Adjusted_Stock_Price", "Stock_Price",
                       "Dividends_Paid", "Book_Value_Equity", "Minority_interest", "Goodwill", "Other_intangibles",
                       "Shares_outstanding", "NPAT", "Diluted_EPS", "Basic_EPS", "Revenue", "EBIT", "EBITDA", "Total_assets",
                       "Total_liabilities", "Current_liabilities",
@@ -62,81 +63,83 @@ for c in range(len(country_list)):
             req_array = [
                 # Beta
                 {"function": "GDSP", "identifier": company, "mnemonic": "IQ_BETA","properties": {"AsOfDate": "01/01/2018"}},
+                # Enterprise Value
+                {"Function": "GDST", "Identifier": company, "Mnemonic": "IQ_TEV", "properties": {"frequency": "Yearly", "startDate": "01/01/2011", "endDate": "06/06/2025", "CurrencyID": "AUD"}},  # 2011
                 # Market Cap
-                {"Function": "GDST", "Identifier": company, "Mnemonic": "IQ_MARKETCAP", "properties": {"frequency": "Yearly", "startDate": "01/01/2011", "endDate": "06/06/2025","CurrencyID": "USD"}},  # 2011
+                {"Function": "GDST", "Identifier": company, "Mnemonic": "IQ_MARKETCAP", "properties": {"frequency": "Yearly", "startDate": "01/01/2011", "endDate": "06/06/2025","CurrencyID": "AUD"}},  # 2011
                 # P/E
                 {"Function": "GDST", "Identifier": company, "Mnemonic": "IQ_PE_NORMALIZED","properties": {"frequency": "Yearly", "startDate": "01/01/2011", "endDate": "06/06/2025",
-                                "CurrencyID": "USD"}},
+                                "CurrencyID": "AUD"}},
                 # P/BV
-                {"Function": "GDST", "Identifier": company, "Mnemonic": "IQ_PBV","properties": {"frequency": "Yearly", "startDate": "01/01/2011", "endDate": "06/06/2025","CurrencyID": "USD"}},
+                {"Function": "GDST", "Identifier": company, "Mnemonic": "IQ_PBV","properties": {"frequency": "Yearly", "startDate": "01/01/2011", "endDate": "06/06/2025","CurrencyID": "AUD"}},
                 # Adjusted Close Price
-                {"Function": "GDST", "Identifier": company, "Mnemonic": "IQ_CLOSEPRICE_ADJ", "properties": {"frequency": "Yearly", "startDate": "01/01/2011", "endDate": "06/06/2025", "CurrencyID": "USD"}},
+                {"Function": "GDST", "Identifier": company, "Mnemonic": "IQ_CLOSEPRICE_ADJ", "properties": {"frequency": "Yearly", "startDate": "01/01/2011", "endDate": "06/06/2025", "CurrencyID": "AUD"}},
                 # Close Price
-                {"Function": "GDST", "Identifier": company, "Mnemonic": "IQ_CLOSEPRICE", "properties": {"frequency": "Yearly", "startDate": "01/01/2011", "endDate": "06/06/2025", "CurrencyID": "USD"}},
+                {"Function": "GDST", "Identifier": company, "Mnemonic": "IQ_CLOSEPRICE", "properties": {"frequency": "Yearly", "startDate": "01/01/2011", "endDate": "06/06/2025", "CurrencyID": "AUD"}},
 
                 # Total Dividends paid
-                {"function": "GDSHE", "identifier": company, "mnemonic": "IQ_TOTAL_DIV_PAID_CF","Properties": {"PeriodType": "IQ_FY-15", "Metadatatag": "PeriodDate", "CurrencyID": "USD"}},
+                {"function": "GDSHE", "identifier": company, "mnemonic": "IQ_TOTAL_DIV_PAID_CF","Properties": {"PeriodType": "IQ_FY-15", "Metadatatag": "PeriodDate", "CurrencyID": "AUD"}},
                 # Tangible Book Value of Equity
-                {"Function": "GDSHE", "Identifier": company, "Mnemonic": "IQ_TBV","Properties": {"PeriodType": "IQ_FY-15", "Metadatatag": "PeriodDate", "CurrencyID": "USD"}},
+                {"Function": "GDSHE", "Identifier": company, "Mnemonic": "IQ_TBV","Properties": {"PeriodType": "IQ_FY-15", "Metadatatag": "PeriodDate", "CurrencyID": "AUD"}},
                 # Minority interests
-                {"Function": "GDSHE", "Identifier": company, "Mnemonic": "IQ_MINORITY_INTEREST", "Properties": {"PeriodType": "IQ_FY-15", "Metadatatag": "PeriodDate", "CurrencyID": "USD"}},
+                {"Function": "GDSHE", "Identifier": company, "Mnemonic": "IQ_MINORITY_INTEREST", "Properties": {"PeriodType": "IQ_FY-15", "Metadatatag": "PeriodDate", "CurrencyID": "AUD"}},
                 # Goodwill
-                {"Function": "GDSHE", "Identifier": company, "Mnemonic": "IQ_GW","Properties": {"PeriodType": "IQ_FY-15", "Metadatatag": "PeriodDate", "CurrencyID": "USD"}},
+                {"Function": "GDSHE", "Identifier": company, "Mnemonic": "IQ_GW","Properties": {"PeriodType": "IQ_FY-15", "Metadatatag": "PeriodDate", "CurrencyID": "AUD"}},
                 # Other intangibles
-                {"Function": "GDSHE", "Identifier": company, "Mnemonic": "IQ_OTHER_INTAN", "Properties": {"PeriodType": "IQ_FY-15", "Metadatatag": "PeriodDate", "CurrencyID": "USD"}},
+                {"Function": "GDSHE", "Identifier": company, "Mnemonic": "IQ_OTHER_INTAN", "Properties": {"PeriodType": "IQ_FY-15", "Metadatatag": "PeriodDate", "CurrencyID": "AUD"}},
                 # Number of shares outstanding
-                {"Function": "GDSHE", "Identifier": company, "Mnemonic": "IQ_TOTAL_OUTSTANDING_BS_DATE", "Properties": {"PeriodType": "IQ_FY-15", "Metadatatag": "PeriodDate", "CurrencyID": "USD"}},
+                {"Function": "GDSHE", "Identifier": company, "Mnemonic": "IQ_TOTAL_OUTSTANDING_BS_DATE", "Properties": {"PeriodType": "IQ_FY-15", "Metadatatag": "PeriodDate", "CurrencyID": "AUD"}},
                 # Net Income Excluding extraordinary items
-                {"Function": "GDSHE", "Identifier": company, "Mnemonic": "IQ_NI_AVAIL_EXCL","Properties": {"PeriodType": "IQ_FY-15", "Metadatatag": "PeriodDate", "CurrencyID": "USD"}},
+                {"Function": "GDSHE", "Identifier": company, "Mnemonic": "IQ_NI_AVAIL_EXCL","Properties": {"PeriodType": "IQ_FY-15", "Metadatatag": "PeriodDate", "CurrencyID": "AUD"}},
                 # Diluted EPS
-                {"Function": "GDSHE", "Identifier": company, "Mnemonic": "IQ_DILUT_EPS_NORM","Properties": {"PeriodType": "IQ_FY-15", "Metadatatag": "PeriodDate", "CurrencyID": "USD"}},
+                {"Function": "GDSHE", "Identifier": company, "Mnemonic": "IQ_DILUT_EPS_NORM","Properties": {"PeriodType": "IQ_FY-15", "Metadatatag": "PeriodDate", "CurrencyID": "AUD"}},
                 # Trailing EPS (including)
-                {"Function": "GDSHE", "Identifier": company, "Mnemonic": "IQ_BASIC_EPS_INCL", "Properties": {"PeriodType": "IQ_FY-15", "Metadatatag": "PeriodDate", "CurrencyID": "USD"}},
+                {"Function": "GDSHE", "Identifier": company, "Mnemonic": "IQ_BASIC_EPS_INCL", "Properties": {"PeriodType": "IQ_FY-15", "Metadatatag": "PeriodDate", "CurrencyID": "AUD"}},
 
                 # Revenue
-                {"Function": "GDSHE", "Identifier": company, "Mnemonic": "IQ_TOTAL_REV",             "Properties": {"PeriodType": "IQ_FY-15", "Metadatatag": "PeriodDate", "CurrencyID": "USD"}},
+                {"Function": "GDSHE", "Identifier": company, "Mnemonic": "IQ_TOTAL_REV",             "Properties": {"PeriodType": "IQ_FY-15", "Metadatatag": "PeriodDate", "CurrencyID": "AUD"}},
                 # EBIT
-                {"Function": "GDSHE", "Identifier": company, "Mnemonic": "IQ_EBIT",             "Properties": {"PeriodType": "IQ_FY-15", "Metadatatag": "PeriodDate", "CurrencyID": "USD"}},
+                {"Function": "GDSHE", "Identifier": company, "Mnemonic": "IQ_EBIT",             "Properties": {"PeriodType": "IQ_FY-15", "Metadatatag": "PeriodDate", "CurrencyID": "AUD"}},
                 # EBITDA
-                {"Function": "GDSHE", "Identifier": company, "Mnemonic": "IQ_EBITDA",             "Properties": {"PeriodType": "IQ_FY-15", "Metadatatag": "PeriodDate", "CurrencyID": "USD"}},
+                {"Function": "GDSHE", "Identifier": company, "Mnemonic": "IQ_EBITDA",             "Properties": {"PeriodType": "IQ_FY-15", "Metadatatag": "PeriodDate", "CurrencyID": "AUD"}},
                 # Total Assets
-                {"Function": "GDSHE", "Identifier": company, "Mnemonic": "IQ_TOTAL_ASSETS",             "Properties": {"PeriodType": "IQ_FY-15", "Metadatatag": "PeriodDate", "CurrencyID": "USD"}},
+                {"Function": "GDSHE", "Identifier": company, "Mnemonic": "IQ_TOTAL_ASSETS",             "Properties": {"PeriodType": "IQ_FY-15", "Metadatatag": "PeriodDate", "CurrencyID": "AUD"}},
                 # Total liabilities
-                {"Function": "GDSHE", "Identifier": company, "Mnemonic": "IQ_TOTAL_LIAB",             "Properties": {"PeriodType": "IQ_FY-15", "Metadatatag": "PeriodDate", "CurrencyID": "USD"}},
+                {"Function": "GDSHE", "Identifier": company, "Mnemonic": "IQ_TOTAL_LIAB",             "Properties": {"PeriodType": "IQ_FY-15", "Metadatatag": "PeriodDate", "CurrencyID": "AUD"}},
                 # Total Current Liabilities
-                {"Function": "GDSHE", "Identifier": company, "Mnemonic": "IQ_TOTAL_CL",             "Properties": {"PeriodType": "IQ_FY-15", "Metadatatag": "PeriodDate", "CurrencyID": "USD"}},
+                {"Function": "GDSHE", "Identifier": company, "Mnemonic": "IQ_TOTAL_CL",             "Properties": {"PeriodType": "IQ_FY-15", "Metadatatag": "PeriodDate", "CurrencyID": "AUD"}},
                 # Total Accounts PAYABLE
-                {"Function": "GDSHE", "Identifier": company, "Mnemonic": "IQ_AP",             "Properties": {"PeriodType": "IQ_FY-15", "Metadatatag": "PeriodDate", "CurrencyID": "USD"}},
+                {"Function": "GDSHE", "Identifier": company, "Mnemonic": "IQ_AP",             "Properties": {"PeriodType": "IQ_FY-15", "Metadatatag": "PeriodDate", "CurrencyID": "AUD"}},
                 # Total Accrued expenses
-                {"Function": "GDSHE", "Identifier": company, "Mnemonic": "IQ_AE",             "Properties": {"PeriodType": "IQ_FY-15", "Metadatatag": "PeriodDate", "CurrencyID": "USD"}},
+                {"Function": "GDSHE", "Identifier": company, "Mnemonic": "IQ_AE",             "Properties": {"PeriodType": "IQ_FY-15", "Metadatatag": "PeriodDate", "CurrencyID": "AUD"}},
                 # Total Unearned Revenue
-                {"Function": "GDSHE", "Identifier": company, "Mnemonic": "IQ_UNEARN_REV_LT",             "Properties": {"PeriodType": "IQ_FY-15", "Metadatatag": "PeriodDate", "CurrencyID": "USD"}},
+                {"Function": "GDSHE", "Identifier": company, "Mnemonic": "IQ_UNEARN_REV_LT",             "Properties": {"PeriodType": "IQ_FY-15", "Metadatatag": "PeriodDate", "CurrencyID": "AUD"}},
                 # Deferred Tax liability
-                {"Function": "GDSHE", "Identifier": company, "Mnemonic": "IQ_DEF_TAX_LIAB_LT",             "Properties": {"PeriodType": "IQ_FY-15", "Metadatatag": "PeriodDate", "CurrencyID": "USD"}},
+                {"Function": "GDSHE", "Identifier": company, "Mnemonic": "IQ_DEF_TAX_LIAB_LT",             "Properties": {"PeriodType": "IQ_FY-15", "Metadatatag": "PeriodDate", "CurrencyID": "AUD"}},
                 # Research & Development
-                {"Function": "GDSHE", "Identifier": company, "Mnemonic": "IQ_RD_EXP",             "Properties": {"PeriodType": "IQ_FY-15", "Metadatatag": "PeriodDate", "CurrencyID": "USD"}},
+                {"Function": "GDSHE", "Identifier": company, "Mnemonic": "IQ_RD_EXP",             "Properties": {"PeriodType": "IQ_FY-15", "Metadatatag": "PeriodDate", "CurrencyID": "AUD"}},
                 # Effective Tax rate
-                {"Function": "GDSHE", "Identifier": company, "Mnemonic": "IQ_EFFECT_TAX_RATE",             "Properties": {"PeriodType": "IQ_FY-15", "Metadatatag": "PeriodDate", "CurrencyID": "USD"}},
+                {"Function": "GDSHE", "Identifier": company, "Mnemonic": "IQ_EFFECT_TAX_RATE",             "Properties": {"PeriodType": "IQ_FY-15", "Metadatatag": "PeriodDate", "CurrencyID": "AUD"}},
                 # Long-term debt
-                {"Function": "GDSHE", "Identifier": company, "Mnemonic": "IQ_LT_DEBT",             "Properties": {"PeriodType": "IQ_FY-15", "Metadatatag": "PeriodDate", "CurrencyID": "USD"}},
+                {"Function": "GDSHE", "Identifier": company, "Mnemonic": "IQ_LT_DEBT",             "Properties": {"PeriodType": "IQ_FY-15", "Metadatatag": "PeriodDate", "CurrencyID": "AUD"}},
                 # Short-term Borrowings
-                {"Function": "GDSHE", "Identifier": company, "Mnemonic": "IQ_ST_DEBT",             "Properties": {"PeriodType": "IQ_FY-15", "Metadatatag": "PeriodDate", "CurrencyID": "USD"}},
+                {"Function": "GDSHE", "Identifier": company, "Mnemonic": "IQ_ST_DEBT",             "Properties": {"PeriodType": "IQ_FY-15", "Metadatatag": "PeriodDate", "CurrencyID": "AUD"}},
                 # Common stock issued
-                {"function": "GDSHE", "identifier": company, "mnemonic": "IQ_COMMON_ISSUED",             "Properties": {"PeriodType": "IQ_FY-15", "Metadatatag": "PeriodDate", "CurrencyID": "USD"}},
+                {"function": "GDSHE", "identifier": company, "mnemonic": "IQ_COMMON_ISSUED",             "Properties": {"PeriodType": "IQ_FY-15", "Metadatatag": "PeriodDate", "CurrencyID": "AUD"}},
                 # Common stock repurchased
-                {"function": "GDSHE", "identifier": company, "mnemonic": "IQ_COMMON_REP",             "Properties": {"PeriodType": "IQ_FY-15", "Metadatatag": "PeriodDate", "CurrencyID": "USD"}},
+                {"function": "GDSHE", "identifier": company, "mnemonic": "IQ_COMMON_REP",             "Properties": {"PeriodType": "IQ_FY-15", "Metadatatag": "PeriodDate", "CurrencyID": "AUD"}},
                 # Total Debt
-                {"function": "GDSHE", "identifier": company, "mnemonic": "IQ_TOTAL_DEBT",             "Properties": {"PeriodType": "IQ_FY-15", "Metadatatag": "PeriodDate", "CurrencyID": "USD"}},
+                {"function": "GDSHE", "identifier": company, "mnemonic": "IQ_TOTAL_DEBT",             "Properties": {"PeriodType": "IQ_FY-15", "Metadatatag": "PeriodDate", "CurrencyID": "AUD"}},
                 # Total Equity
-                {"function": "GDSHE", "identifier": company, "mnemonic": "IQ_TOTAL_EQUITY",             "Properties": {"PeriodType": "IQ_FY-15", "Metadatatag": "PeriodDate", "CurrencyID": "USD"}},
+                {"function": "GDSHE", "identifier": company, "mnemonic": "IQ_TOTAL_EQUITY",             "Properties": {"PeriodType": "IQ_FY-15", "Metadatatag": "PeriodDate", "CurrencyID": "AUD"}},
                 # CAPEX
-                {"function": "GDSHE", "identifier": company, "mnemonic": "IQ_CAPEX",             "Properties": {"PeriodType": "IQ_FY-15", "Metadatatag": "PeriodDate", "CurrencyID": "USD"}},
+                {"function": "GDSHE", "identifier": company, "mnemonic": "IQ_CAPEX",             "Properties": {"PeriodType": "IQ_FY-15", "Metadatatag": "PeriodDate", "CurrencyID": "AUD"}},
                 # Full-time employees
-                {"function": "GDSHE", "identifier": company, "mnemonic": "IQ_FULL_TIME",             "Properties": {"PeriodType": "IQ_FY-15", "Metadatatag": "PeriodDate", "CurrencyID": "USD"}},
+                {"function": "GDSHE", "identifier": company, "mnemonic": "IQ_FULL_TIME",             "Properties": {"PeriodType": "IQ_FY-15", "Metadatatag": "PeriodDate", "CurrencyID": "AUD"}},
                 # Cash Acquisitions
-                {"function": "GDSHE", "identifier": company, "mnemonic": "IQ_CASH_ACQUIRE_CF",             "Properties": {"PeriodType": "IQ_FY-15", "Metadatatag": "PeriodDate", "CurrencyID": "USD"}},
+                {"function": "GDSHE", "identifier": company, "mnemonic": "IQ_CASH_ACQUIRE_CF",             "Properties": {"PeriodType": "IQ_FY-15", "Metadatatag": "PeriodDate", "CurrencyID": "AUD"}},
                 # Gross Profit
-                {"function": "GDSHE", "identifier": company, "mnemonic": "IQ_GP",             "Properties": {"PeriodType": "IQ_FY-15", "Metadatatag": "PeriodDate", "CurrencyID": "USD"}},
+                {"function": "GDSHE", "identifier": company, "mnemonic": "IQ_GP",             "Properties": {"PeriodType": "IQ_FY-15", "Metadatatag": "PeriodDate", "CurrencyID": "AUD"}},
             ]
 
             req = {"inputRequests": req_array}
@@ -352,8 +355,7 @@ for c in range(len(country_list)):
             df_transpose["Tangible_equity"] = df_transpose["Total_equity"] - df_transpose["Minority_interest"] - \
                                               df_transpose["Goodwill"] - df_transpose["Other_intangibles"]
             # CROTE
-            df_transpose["CROTE"] = df_transpose["NPAT"] - (df_transpose["Tangible_equity"]) * df_transpose[
-                "Cost of Equity"]
+            df_transpose["CROTE"] = df_transpose["NPAT"] - (df_transpose["Tangible_equity"]) * df_transpose["Cost of Equity"]
             # CROTE/TE
             df_transpose["CROTE_TE"] = df_transpose["CROTE"] / df_transpose["Tangible_equity"]
             # ROTE_
@@ -486,7 +488,7 @@ for c in range(len(country_list)):
             # Now get Adjusted Close Price & save separately
             req_array = [
                 {"Function": "GDST", "Identifier": company, "Mnemonic": "IQ_CLOSEPRICE_ADJ",
-                 "properties": {"frequency": "Daily", "startDate": "02/02/2019", "endDate": "02/02/2025","CurrencyID": "USD"}}]
+                 "properties": {"frequency": "Daily", "startDate": "02/13/2019", "endDate": "02/13/2025","CurrencyID": "USD"}}]
 
             req = {"inputRequests": req_array}
             response = requests.post(endpoint_url,

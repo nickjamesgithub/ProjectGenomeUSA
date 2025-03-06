@@ -10,6 +10,7 @@ matplotlib.use('TkAgg')
 # Import specific utilities (these imports assume the presence of `Utilities`)
 from Utilities import compute_percentiles, firefly_plot, geometric_return
 from Utilities import generate_market_cap_class, waterfall_value_plot, geometric_return, dendrogram_plot, get_even_clusters
+import traceback
 
 # Global parameters
 make_plots = False
@@ -48,8 +49,14 @@ def sector_functions_mobility_matrix(df):
         slice_i = df.loc[df["Company_name"] == unique_companies[i]]
         # Various averages and calculations for the sector mobility matrix
         revenue_avg = slice_i["Revenue"].iloc[1:].mean()
-        revenue_cagr = (slice_i["Revenue"].iloc[-1] / slice_i["Revenue"].iloc[0]) ** (1 / (len(slice_i) - 1)) - 1
-        tsr = (slice_i["Adjusted_Stock_Price"].iloc[-1] / slice_i["Adjusted_Stock_Price"].iloc[0]) ** (1 / (len(slice_i) - 1)) - 1
+        if len(slice_i) > 1 and slice_i["Revenue"].iloc[0] != 0:
+            revenue_cagr = (slice_i["Revenue"].iloc[-1] / slice_i["Revenue"].iloc[0]) ** (1 / (len(slice_i) - 1)) - 1
+        else:
+            revenue_cagr = np.nan
+        if len(slice_i) > 1:
+            tsr = (slice_i["Adjusted_Stock_Price"].iloc[-1] / slice_i["Adjusted_Stock_Price"].iloc[0]) ** (1 / (len(slice_i) - 1)) - 1
+        else:
+            tsr = np.nan
         leverage = slice_i["Debt_to_equity"].iloc[1:].mean()
         investment = slice_i["RD/Revenue"].iloc[1:].mean()
         eva_ratio_avg = slice_i["EVA_ratio_bespoke"].iloc[1:].mean()
@@ -95,7 +102,7 @@ features = ["Company_name", "Country", "Sector", "Year", "TSR", "Revenue_growth_
 # Loop over all years
 df_list = []
 df_issue_list = []
-for i in range(len(year_grid)-rolling_window+1):
+for i in range(len(year_grid)-rolling_window):
     # Loop over all companies
     for j in range(len(unique_tickers)):
         try:
@@ -282,9 +289,11 @@ for i in range(len(year_grid)-rolling_window+1):
                                 company_capex_per_revenue, sector_capex_per_revenue, delta_capex_per_revenue,
                                 company_npat_per_employee, sector_npat_per_employee, delta_npat_per_employee,
                                 company_gross_margin, sector_gross_margin, delta_gross_margin, sector_tsr, company_tsr])
-        except:
-            print("Issue with " + company_name_j + " Years: " + str(year_i) + "-" + str(year_i_2))
-            df_issue_list.append([company_name_j, year_i, year_i_2])
+        except Exception as e:
+            error_message = str(e)
+            traceback_info = traceback.format_exc()
+            print(f"Issue with {unique_ticker_j} Years: {year_i}-{year_i_2} | Error: {error_message}")
+            df_issue_list.append([company_name_j, year_i, year_i_2, error_message])
 
 # Create collapsed journeys dataframe
 df_journey_collapsed = pd.DataFrame(df_list)

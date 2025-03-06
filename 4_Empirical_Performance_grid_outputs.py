@@ -13,11 +13,10 @@ import math
 df_full = pd.read_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\Journeys_summary_Global.csv")
 
 # Desired sectors and date range
-country_list = ["USA", 'AUS', 'INDIA', 'JAPAN', 'EURO', 'UK'] # "USA", 'AUS', 'INDIA', 'JAPAN', 'EURO', 'UK'
-unique_sectors = df_full["Sector"].unique()
+country_list = [ "USA", 'AUS', 'INDIA', 'JAPAN', 'EURO', 'UK'] # "USA", 'AUS', 'INDIA', 'JAPAN', 'EURO', 'UK'
+unique_sectors = ["Healthcare"]
+# unique_sectors = df_full["Sector"].unique()
 desired_sectors = unique_sectors
-start_year = 2014
-end_year = 2024
 
 # 1. Filter by Country & Sector
 df_slice = df_full[(df_full['Country'].isin(country_list)) & (df_full["Sector"]).isin(unique_sectors)]
@@ -33,19 +32,23 @@ for i in range(len(genome_class_unique)):
     # Slice genome class
     df_genome_class_i = df_slice.loc[(df_slice["Genome_classification_bespoke_end"]==genome_class_unique[i]) &
                                (df_slice["EVA_end"] >= -.3) & (df_slice["EVA_end"] <= .5) &
+                                     (df_slice["ROE_above_Cost_of_equity_end"] >= -.3) & (df_slice["ROE_above_Cost_of_equity_end"] <= .5) &
+                                     (df_slice["CROTE_TE_end"] >= -.3) & (df_slice["CROTE_TE_end"] <= .5) &
                                (df_slice["Revenue_growth_end"] >= -.3) & (df_slice["Revenue_growth_end"] <= 1.5) &
                                (df_slice["Annualized_TSR_Capiq"] >= -.4) & (df_slice["Annualized_TSR_Capiq"] <= 1) &
                                (df_slice["Price_to_book"] > -200)]
 
     df_market_return_proxy = df_slice.loc[(df_slice["EVA_end"] >= -.3) & (df_slice["EVA_end"] <= .5) &
                                (df_slice["Revenue_growth_end"] >= -.3) & (df_slice["Revenue_growth_end"] <= 1.5) &
+                                          (df_slice["ROE_above_Cost_of_equity_end"] >= -.3) & (df_slice["ROE_above_Cost_of_equity_end"] <= .5) &
+                                          (df_slice["CROTE_TE_end"] >= -.3) & (df_slice["CROTE_TE_end"] <= .5) &
                                (df_slice["Annualized_TSR_Capiq"] >= -.4) & (df_slice["Annualized_TSR_Capiq"] <= 1) &
                                (df_slice["Price_to_book"] > -200)]
     # Market return proxy
     market_return_median = np.median(df_market_return_proxy["Annualized_TSR_Capiq"].values)
 
     # Compute annualized TSR values
-    annualised_tsr_capiq_i = df_genome_class_i["Annualized_TSR_Capiq"].mean()
+    annualised_tsr_capiq_i = df_genome_class_i["Annualized_TSR_Capiq"].median()
     # Compute standard deviation
     annualised_tsr_capiq_i_std = df_genome_class_i["Annualized_TSR_Capiq"].std()
     annualised_tsr_capiq_i_min = df_genome_class_i["Annualized_TSR_Capiq"].min()
@@ -61,8 +64,11 @@ for i in range(len(genome_class_unique)):
 # Make results dataframe
 results_df = pd.DataFrame(results_list)
 results_df.columns = ["Genome_class", "N", "Annualized_TSR", "Standard_deviation_TSR", "Minimum_TSR", "Maximum_TSR", "Normalized_TSR", "Price_to_book"]
-results_df.to_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\Global_Genome_grid_output.csv")
 
 x=1
 y=2
+# results_df.to_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\Global_Genome_grid_output.csv")
+
+
+
 

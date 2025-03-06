@@ -10,10 +10,10 @@ matplotlib.use('TkAgg')
 data = pd.read_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\global_platform_data\Global_data.csv")
 
 # Full ticker list and corresponding start/end years
-full_ticker_list = ["NYSE:T"]
+full_ticker_list = ["ASX:CSL"]
 start_years = [2015]
 end_years = [2024]
-plot_label = "AT&T"
+plot_label = "CSL Limited"
 
 # Extract company names before looping
 company_name_list = [data.loc[data["Ticker_full"] == ticker, "Company_name"].iloc[0] for ticker in full_ticker_list]
@@ -29,8 +29,7 @@ for i, full_ticker in enumerate(full_ticker_list):
     country_i = data.loc[data["Ticker_full"] == full_ticker, "Country"].iloc[0]
 
     # Load company data from the correct country subfolder
-    df = pd.read_csv(
-        fr"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\global_platform_data\{country_i}\_{company_i}.csv")
+    df = pd.read_csv(fr"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\global_platform_data\{country_i}\_{company_i}.csv")
 
     # Filter for the selected time window
     company_slice = df[(df["Year"] >= start_years[i]) & (df["Year"] <= end_years[i])]
@@ -96,6 +95,5 @@ plt.title(plot_label)
 plt.xlabel("Revenue growth (3 year moving average)")
 plt.ylabel("EVA Ratio")
 plt.legend()
-plt.savefig(
-    r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\casework\USA_technology\Firefly_plot_CAPIQ_" + plot_label)
+plt.savefig(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\casework\USA_technology\Firefly_plot_CAPIQ_" + plot_label)
 plt.show()

@@ -121,9 +121,9 @@ if run_defined_trajectory:
     df_full = pd.read_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\global_platform_data\Global_data.csv")
 
     # Parameters
-    time_window_length = 6  # Define the time window length
+    time_window_length = 5  # Define the time window length
     country_list = ["USA", 'AUS', 'INDIA', 'JAPAN', 'EURO', 'UK']
-    unique_sectors = df_full["Sector"].unique()
+    unique_sectors = ["Banking"] #  df_full["Sector"].unique()
 
     # Filter by Country and Sector
     df = df_full[(df_full['Country'].isin(country_list)) & (df_full["Sector"].isin(unique_sectors))]
@@ -132,12 +132,11 @@ if run_defined_trajectory:
     # Example format: {year_offset: [possible_genomes]}
     # year_offset is 0 for the first year in the sequence, 1 for the second, etc.
     genome_options = {
-        0: ["UNTENABLE", "UNTENABLE"],
-        1: ["UNTENABLE" , "CHALLENGED"],
-        2: ["CHALLENGED" , "VIRTUOUS"],
-        3: ["VIRTUOUS", "FAMOUS"],
-        4: ["FAMOUS", "LEGENDARY"],
-        5: ["FAMOUS", "LEGENDARY"]
+        0: ["VIRTUOUS", "FAMOUS", "LEGENDARY"],
+        1: ["VIRTUOUS", "FAMOUS", "LEGENDARY"],
+        2: ["VIRTUOUS", "FAMOUS", "LEGENDARY"],
+        3: ["VIRTUOUS", "FAMOUS", "LEGENDARY"],
+        4: ["VIRTUOUS", "FAMOUS", "LEGENDARY"]
     }
 
     # Function to check if the sequence in the DataFrame matches any of the allowed sequences
@@ -175,6 +174,8 @@ if run_defined_trajectory:
     # Convert results to DataFrame
     results_df = pd.DataFrame(results)
     print(results_df)
+
+
 
 if run_firefly_plot:
     # Import data
