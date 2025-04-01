@@ -10,7 +10,7 @@ from scipy.stats import gaussian_kde
 import math
 
 # Read the data
-df_full = pd.read_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\Journeys_summary_Global.csv")
+df_full = pd.read_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\Journeys_summary_fashion_filtered.csv")
 
 # Desired sectors and date range
 country_list = [ "USA", 'AUS', 'INDIA', 'JAPAN', 'EURO', 'UK'] # "USA", 'AUS', 'INDIA', 'JAPAN', 'EURO', 'UK'

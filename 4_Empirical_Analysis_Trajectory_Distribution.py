@@ -23,11 +23,13 @@ year_grid = np.linspace(beginning_year, end_year, end_year-beginning_year+1)
 rolling_window = 3
 
 # Import data
-data = pd.read_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\global_platform_data\Global_data.csv")
+data = pd.read_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\Global_platform_data_25\Global_data_25.csv")
 
 # Define countries and sectors to include
-countries_to_include = ['USA', 'AUS', 'INDIA', 'JAPAN', 'EURO', 'UK']  # 'USA', 'AUS', 'INDIA', 'JAPAN', 'EURO', 'UK'
-sectors_to_include = ['Industrials', 'Materials', 'Healthcare', 'Technology',
+countries_to_include = ["AUSTRALIA", "BELGIUM", "CANADA", "CHILE", "CHINA", "DENMARK", "FRANCE", "GERMANY", "HONG KONG", "INDIA", "ITALY", "JAPAN", "LUXEMBOURG", "MALAYSIA",
+                "NETHERLANDS", "PHILIPPINES", "SAUDI ARABIA", "SINGAPORE", "SOUTH KOREA", "SWEDEN", "SWITZERLAND", "THAILAND", "UAE", "UNITED KINGDOM", "USA"]
+
+sectors_to_include = ['Industrials', 'Materials', 'Healthcare', "Health Care" 'Technology',
        'Insurance', 'Gaming/alcohol', 'Media', 'REIT', 'Utilities',
        'Consumer staples', 'Consumer Discretionary',
        'Investment and Wealth', 'Telecommunications', 'Energy', 'Banking',
@@ -327,7 +329,7 @@ df_journey_collapsed["X_change"] = df_journey_collapsed["Revenue_growth_end"] - 
 df_journey_collapsed["Y_change"] = df_journey_collapsed["EVA_end"] - df_journey_collapsed["EVA_beginning"]
 
 # Write out csv file locally
-df_journey_collapsed.to_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\Journeys_summary_Global.csv")
+df_journey_collapsed.to_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\Journeys_summary_Global_25.csv")
 
 if genome_filtering:
     df_journey_collapsed = df_journey_collapsed.loc[(df_journey_collapsed["EVA_end"] >= -.3) & (df_journey_collapsed["EVA_end"] <= .5) &
@@ -336,7 +338,7 @@ if genome_filtering:
                                      (df_journey_collapsed["Price_to_book"] > -200)]
 
 # Write out csv file locally
-df_journey_collapsed.to_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\Journeys_summary_Global_filtered.csv")
+df_journey_collapsed.to_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\Journeys_summary_Global_filtered_25.csv")
 
 # Filter out infinite and NaN values before plotting
 df_journey_collapsed = df_journey_collapsed.replace([np.inf, -np.inf], np.nan)

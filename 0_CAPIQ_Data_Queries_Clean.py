@@ -6,46 +6,106 @@ import pandas as pd
 import numpy as np
 import os  # Ensure this is imported at the top
 
-country_list = ["AUS"] # "INDIA", "JAPAN", "EURO", "UK", "USA", "AUS"
+# AUSTRALIA, BELGIUM, CANADA, CHILE, CHINA, DENMARK, FRANCE, GERMANY, HONG KONG, INDIA, ITALY, JAPAN, LUXEMBOURG, MALAYSIA, NETHERLANDS, PHILIPPINES, SAUDI ARABIA
+# SINGAPORE, SOUTH KOREA, SWEDEN, SWITZERLAND, THAILAND, UAE, UNITED KINGDOM, USA
+
+# country_list = ["AUSTRALIA", "BELGIUM", "CANADA", "CHILE", "CHINA", "DENMARK", "FRANCE", "GERMANY", "HONG KONG", "INDIA", "ITALY", "JAPAN",
+#     "LUXEMBOURG", "MALAYSIA", "NETHERLANDS", "PHILIPPINES", "SAUDI ARABIA", "SINGAPORE", "SOUTH KOREA", "SWEDEN", "SWITZERLAND", "THAILAND", "UAE", "UNITED KINGDOM", "USA"]
+
+country_list = ["CHINA"]
+
 # Define the base directory where you want to save the files
-base_directory = r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\global_platform_data"
+base_directory = r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\Global_platform_data_25"
 
 for c in range(len(country_list)):
+    # AUSTRALIA, BELGIUM, CANADA, CHILE, CHINA, DENMARK, FRANCE, GERMANY, HONG KONG, INDIA, ITALY, JAPAN, LUXEMBOURG, MALAYSIA, NETHERLANDS, PHILIPPINES, SAUDI ARABIA
+    # SINGAPORE, SOUTH KOREA, SWEDEN, THAILAND, UNITED KINGDOM, USA
 
-    country_import = country_list[c] # AUS / USA / INDIA / JAPAN / euro / UK
+    country_import = country_list[c]
 
     # Import mapping data
-    if country_import == "USA":
-        mapping_data = pd.read_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\Global_market_constituents\Company_list_GPT_SP500.csv", encoding='cp1252')
-    if country_import == "AUS":
-        mapping_data = pd.read_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\Global_market_constituents\Company_list_GPT_AUS.csv", encoding='cp1252')
+    if country_import == "AUSTRALIA":
+        mapping_data = pd.read_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\Global_market_constituents_25\Company_list_GPT_Australia.csv", encoding='cp1252')
+    if country_import == "BELGIUM":
+        mapping_data = pd.read_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\Global_market_constituents_25\Company_list_GPT_Belgium.csv", encoding='cp1252')
+    if country_import == "CANADA":
+        mapping_data = pd.read_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\Global_market_constituents_25\Company_list_GPT_Canada.csv", encoding='cp1252')
+    if country_import == "CHILE":
+        mapping_data = pd.read_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\Global_market_constituents_25\Company_list_GPT_Chile.csv", encoding='cp1252')
+    if country_import == "CHINA":
+        mapping_data = pd.read_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\Global_market_constituents_25\Company_list_GPT_China.csv", encoding='cp1252')
+    if country_import == "DENMARK":
+        mapping_data = pd.read_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\Global_market_constituents_25\Company_list_GPT_Denmark.csv", encoding='cp1252')
+    if country_import == "FRANCE":
+        mapping_data = pd.read_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\Global_market_constituents_25\Company_list_GPT_France.csv", encoding='cp1252')
+    if country_import == "GERMANY":
+        mapping_data = pd.read_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\Global_market_constituents_25\Company_list_GPT_Germany.csv", encoding='cp1252')
+    if country_import == "HONG KONG":
+        mapping_data = pd.read_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\Global_market_constituents_25\Company_list_GPT_Hong_Kong.csv", encoding='cp1252')
     if country_import == "INDIA":
-        mapping_data = pd.read_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\Global_market_constituents\Company_list_GPT_Nifty.csv", encoding='cp1252')
+        mapping_data = pd.read_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\Global_market_constituents_25\Company_list_GPT_India.csv", encoding='cp1252')
+    if country_import == "ITALY":
+        mapping_data = pd.read_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\Global_market_constituents_25\Company_list_GPT_Italy.csv", encoding='cp1252')
     if country_import == "JAPAN":
-        mapping_data = pd.read_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\Global_market_constituents\Company_list_GPT_Nikkei.csv", encoding='cp1252')
-    if country_import == "EURO":
-        mapping_data = pd.read_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\Global_market_constituents\Company_list_GPT_Euro.csv", encoding='cp1252')
-    if country_import == "UK":
-        mapping_data = pd.read_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\Global_market_constituents\Company_list_GPT_FTSE.csv", encoding='cp1252')
+        mapping_data = pd.read_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\Global_market_constituents_25\Company_list_GPT_Japan.csv", encoding='cp1252')
+    if country_import == "LUXEMBOURG":
+        mapping_data = pd.read_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\Global_market_constituents_25\Company_list_GPT_Luxembourg.csv", encoding='cp1252')
+    if country_import == "MALAYSIA":
+        mapping_data = pd.read_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\Global_market_constituents_25\Company_list_GPT_Malaysia.csv", encoding='cp1252')
+    if country_import == "NETHERLANDS":
+        mapping_data = pd.read_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\Global_market_constituents_25\Company_list_GPT_Netherlands.csv", encoding='cp1252')
+    if country_import == "PHILIPPINES":
+        mapping_data = pd.read_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\Global_market_constituents_25\Company_list_GPT_Philippines.csv", encoding='cp1252')
+    if country_import == "SAUDI ARABIA":
+        mapping_data = pd.read_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\Global_market_constituents_25\Company_list_GPT_Saudi_Arabia.csv", encoding='cp1252')
+    if country_import == "SINGAPORE":
+        mapping_data = pd.read_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\Global_market_constituents_25\Company_list_GPT_Singapore.csv", encoding='cp1252')
+    if country_import == "SOUTH KOREA":
+        mapping_data = pd.read_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\Global_market_constituents_25\Company_list_GPT_South_Korea.csv", encoding='cp1252')
+    if country_import == "SWEDEN":
+        mapping_data = pd.read_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\Global_market_constituents_25\Company_list_GPT_Sweden.csv", encoding='cp1252')
+    if country_import == "SWITZERLAND":
+        mapping_data = pd.read_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\Global_market_constituents_25\Company_list_GPT_Switzerland.csv", encoding='cp1252')
+    if country_import == "THAILAND":
+        mapping_data = pd.read_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\Global_market_constituents_25\Company_list_GPT_Thailand.csv", encoding='cp1252')
+    if country_import == "UNITED KINGDOM":
+        mapping_data = pd.read_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\Global_market_constituents_25\Company_list_GPT_United_Kingdom.csv", encoding='cp1252')
+    if country_import == "UAE":
+        mapping_data = pd.read_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\Global_market_constituents_25\Company_list_GPT_UAE.csv", encoding='cp1252')
+    if country_import == "USA":
+        mapping_data = pd.read_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\Global_market_constituents_25\Company_list_GPT_USA.csv", encoding='cp1252')
+
 
     # WACC data
     wacc_store = pd.read_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\WACC_inputs\WACC_Store_2011_2024.csv")
 
-    # Ticker data
     full_ticker_list = mapping_data["Full Ticker"].values
     ticker_slice_list = mapping_data["Ticker"].values
 
     for i in range(len(full_ticker_list)):
         try:
             ticker = full_ticker_list[i]
-            ticker_slice = ticker_slice_list[i]
-            # Split the string at ":"
-            idx, company_ticker = ticker.split(":")
 
-            # Sort out company & ticker pairing
-            company = company_ticker +":"+idx # TICKER FIRST | EXCHANGE SECOND
-            company_slice = idx +":"+company_ticker # EXCHANGE FIRST | TICKER SECOND
-            print("Company data pull ", company_ticker)
+            # Handle tickers with ":" or "."
+            if ":" in ticker:
+                idx, company_ticker = ticker.split(":")
+                company = f"{company_ticker}:{idx}"
+                ticker_slice = company_ticker
+            elif "." in ticker:
+                company_ticker, idx = ticker.split(".")
+                company = f"{company_ticker}:"
+                ticker_slice = company_ticker
+            else:
+                company = ticker
+                ticker_slice = ticker
+
+            print("Company data pull", company)
+
+            company_label = company_ticker
+            endpoint_url = "https://api-ciq.marketintelligence.spglobal.com/gdsapi/rest/v3/clientservice.json"
+
+            filing_currency = mapping_data.loc[mapping_data["Full Ticker"] == ticker, "IQ_FILING_CURRENCY"].values[0]
+            trading_currency = mapping_data.loc[mapping_data["Full Ticker"] == ticker, "IQ_TRADING_CURRENCY"].values[0]
 
             # Get company ticker
             company_label = company_ticker
@@ -64,82 +124,82 @@ for c in range(len(country_list)):
                 # Beta
                 {"function": "GDSP", "identifier": company, "mnemonic": "IQ_BETA","properties": {"AsOfDate": "01/01/2018"}},
                 # Enterprise Value
-                {"Function": "GDST", "Identifier": company, "Mnemonic": "IQ_TEV", "properties": {"frequency": "Yearly", "startDate": "01/01/2011", "endDate": "06/06/2025", "CurrencyID": "AUD"}},  # 2011
+                {"Function": "GDST", "Identifier": company, "Mnemonic": "IQ_TEV", "properties": {"frequency": "Yearly", "startDate": "01/01/2011", "endDate": "06/06/2025", "CurrencyID": filing_currency}},  # 2011
                 # Market Cap
-                {"Function": "GDST", "Identifier": company, "Mnemonic": "IQ_MARKETCAP", "properties": {"frequency": "Yearly", "startDate": "01/01/2011", "endDate": "06/06/2025","CurrencyID": "AUD"}},  # 2011
+                {"Function": "GDST", "Identifier": company, "Mnemonic": "IQ_MARKETCAP", "properties": {"frequency": "Yearly", "startDate": "01/01/2011", "endDate": "06/06/2025","CurrencyID": filing_currency}},  # 2011
                 # P/E
                 {"Function": "GDST", "Identifier": company, "Mnemonic": "IQ_PE_NORMALIZED","properties": {"frequency": "Yearly", "startDate": "01/01/2011", "endDate": "06/06/2025",
-                                "CurrencyID": "AUD"}},
+                                "CurrencyID": filing_currency}},
                 # P/BV
-                {"Function": "GDST", "Identifier": company, "Mnemonic": "IQ_PBV","properties": {"frequency": "Yearly", "startDate": "01/01/2011", "endDate": "06/06/2025","CurrencyID": "AUD"}},
+                {"Function": "GDST", "Identifier": company, "Mnemonic": "IQ_PBV","properties": {"frequency": "Yearly", "startDate": "01/01/2011", "endDate": "06/06/2025","CurrencyID": filing_currency}},
                 # Adjusted Close Price
-                {"Function": "GDST", "Identifier": company, "Mnemonic": "IQ_CLOSEPRICE_ADJ", "properties": {"frequency": "Yearly", "startDate": "01/01/2011", "endDate": "06/06/2025", "CurrencyID": "AUD"}},
+                {"Function": "GDST", "Identifier": company, "Mnemonic": "IQ_CLOSEPRICE_ADJ", "properties": {"frequency": "Yearly", "startDate": "01/01/2011", "endDate": "06/06/2025", "CurrencyID": filing_currency}},
                 # Close Price
-                {"Function": "GDST", "Identifier": company, "Mnemonic": "IQ_CLOSEPRICE", "properties": {"frequency": "Yearly", "startDate": "01/01/2011", "endDate": "06/06/2025", "CurrencyID": "AUD"}},
+                {"Function": "GDST", "Identifier": company, "Mnemonic": "IQ_CLOSEPRICE", "properties": {"frequency": "Yearly", "startDate": "01/01/2011", "endDate": "06/06/2025", "CurrencyID": filing_currency}},
 
                 # Total Dividends paid
-                {"function": "GDSHE", "identifier": company, "mnemonic": "IQ_TOTAL_DIV_PAID_CF","Properties": {"PeriodType": "IQ_FY-15", "Metadatatag": "PeriodDate", "CurrencyID": "AUD"}},
+                {"function": "GDSHE", "identifier": company, "mnemonic": "IQ_TOTAL_DIV_PAID_CF","Properties": {"PeriodType": "IQ_FY-15", "Metadatatag": "PeriodDate", "CurrencyID": filing_currency}},
                 # Tangible Book Value of Equity
-                {"Function": "GDSHE", "Identifier": company, "Mnemonic": "IQ_TBV","Properties": {"PeriodType": "IQ_FY-15", "Metadatatag": "PeriodDate", "CurrencyID": "AUD"}},
+                {"Function": "GDSHE", "Identifier": company, "Mnemonic": "IQ_TBV","Properties": {"PeriodType": "IQ_FY-15", "Metadatatag": "PeriodDate", "CurrencyID": filing_currency}},
                 # Minority interests
-                {"Function": "GDSHE", "Identifier": company, "Mnemonic": "IQ_MINORITY_INTEREST", "Properties": {"PeriodType": "IQ_FY-15", "Metadatatag": "PeriodDate", "CurrencyID": "AUD"}},
+                {"Function": "GDSHE", "Identifier": company, "Mnemonic": "IQ_MINORITY_INTEREST", "Properties": {"PeriodType": "IQ_FY-15", "Metadatatag": "PeriodDate", "CurrencyID": filing_currency}},
                 # Goodwill
-                {"Function": "GDSHE", "Identifier": company, "Mnemonic": "IQ_GW","Properties": {"PeriodType": "IQ_FY-15", "Metadatatag": "PeriodDate", "CurrencyID": "AUD"}},
+                {"Function": "GDSHE", "Identifier": company, "Mnemonic": "IQ_GW","Properties": {"PeriodType": "IQ_FY-15", "Metadatatag": "PeriodDate", "CurrencyID": filing_currency}},
                 # Other intangibles
-                {"Function": "GDSHE", "Identifier": company, "Mnemonic": "IQ_OTHER_INTAN", "Properties": {"PeriodType": "IQ_FY-15", "Metadatatag": "PeriodDate", "CurrencyID": "AUD"}},
+                {"Function": "GDSHE", "Identifier": company, "Mnemonic": "IQ_OTHER_INTAN", "Properties": {"PeriodType": "IQ_FY-15", "Metadatatag": "PeriodDate", "CurrencyID": filing_currency}},
                 # Number of shares outstanding
-                {"Function": "GDSHE", "Identifier": company, "Mnemonic": "IQ_TOTAL_OUTSTANDING_BS_DATE", "Properties": {"PeriodType": "IQ_FY-15", "Metadatatag": "PeriodDate", "CurrencyID": "AUD"}},
+                {"Function": "GDSHE", "Identifier": company, "Mnemonic": "IQ_TOTAL_OUTSTANDING_BS_DATE", "Properties": {"PeriodType": "IQ_FY-15", "Metadatatag": "PeriodDate", "CurrencyID": filing_currency}},
                 # Net Income Excluding extraordinary items
-                {"Function": "GDSHE", "Identifier": company, "Mnemonic": "IQ_NI_AVAIL_EXCL","Properties": {"PeriodType": "IQ_FY-15", "Metadatatag": "PeriodDate", "CurrencyID": "AUD"}},
+                {"Function": "GDSHE", "Identifier": company, "Mnemonic": "IQ_NI_AVAIL_EXCL","Properties": {"PeriodType": "IQ_FY-15", "Metadatatag": "PeriodDate", "CurrencyID": filing_currency}},
                 # Diluted EPS
-                {"Function": "GDSHE", "Identifier": company, "Mnemonic": "IQ_DILUT_EPS_NORM","Properties": {"PeriodType": "IQ_FY-15", "Metadatatag": "PeriodDate", "CurrencyID": "AUD"}},
+                {"Function": "GDSHE", "Identifier": company, "Mnemonic": "IQ_DILUT_EPS_NORM","Properties": {"PeriodType": "IQ_FY-15", "Metadatatag": "PeriodDate", "CurrencyID": filing_currency}},
                 # Trailing EPS (including)
-                {"Function": "GDSHE", "Identifier": company, "Mnemonic": "IQ_BASIC_EPS_INCL", "Properties": {"PeriodType": "IQ_FY-15", "Metadatatag": "PeriodDate", "CurrencyID": "AUD"}},
+                {"Function": "GDSHE", "Identifier": company, "Mnemonic": "IQ_BASIC_EPS_INCL", "Properties": {"PeriodType": "IQ_FY-15", "Metadatatag": "PeriodDate", "CurrencyID": filing_currency}},
 
                 # Revenue
-                {"Function": "GDSHE", "Identifier": company, "Mnemonic": "IQ_TOTAL_REV",             "Properties": {"PeriodType": "IQ_FY-15", "Metadatatag": "PeriodDate", "CurrencyID": "AUD"}},
+                {"Function": "GDSHE", "Identifier": company, "Mnemonic": "IQ_TOTAL_REV",             "Properties": {"PeriodType": "IQ_FY-15", "Metadatatag": "PeriodDate", "CurrencyID": filing_currency}},
                 # EBIT
-                {"Function": "GDSHE", "Identifier": company, "Mnemonic": "IQ_EBIT",             "Properties": {"PeriodType": "IQ_FY-15", "Metadatatag": "PeriodDate", "CurrencyID": "AUD"}},
+                {"Function": "GDSHE", "Identifier": company, "Mnemonic": "IQ_EBIT",             "Properties": {"PeriodType": "IQ_FY-15", "Metadatatag": "PeriodDate", "CurrencyID": filing_currency}},
                 # EBITDA
-                {"Function": "GDSHE", "Identifier": company, "Mnemonic": "IQ_EBITDA",             "Properties": {"PeriodType": "IQ_FY-15", "Metadatatag": "PeriodDate", "CurrencyID": "AUD"}},
+                {"Function": "GDSHE", "Identifier": company, "Mnemonic": "IQ_EBITDA",             "Properties": {"PeriodType": "IQ_FY-15", "Metadatatag": "PeriodDate", "CurrencyID": filing_currency}},
                 # Total Assets
-                {"Function": "GDSHE", "Identifier": company, "Mnemonic": "IQ_TOTAL_ASSETS",             "Properties": {"PeriodType": "IQ_FY-15", "Metadatatag": "PeriodDate", "CurrencyID": "AUD"}},
+                {"Function": "GDSHE", "Identifier": company, "Mnemonic": "IQ_TOTAL_ASSETS",             "Properties": {"PeriodType": "IQ_FY-15", "Metadatatag": "PeriodDate", "CurrencyID": filing_currency}},
                 # Total liabilities
-                {"Function": "GDSHE", "Identifier": company, "Mnemonic": "IQ_TOTAL_LIAB",             "Properties": {"PeriodType": "IQ_FY-15", "Metadatatag": "PeriodDate", "CurrencyID": "AUD"}},
+                {"Function": "GDSHE", "Identifier": company, "Mnemonic": "IQ_TOTAL_LIAB",             "Properties": {"PeriodType": "IQ_FY-15", "Metadatatag": "PeriodDate", "CurrencyID": filing_currency}},
                 # Total Current Liabilities
-                {"Function": "GDSHE", "Identifier": company, "Mnemonic": "IQ_TOTAL_CL",             "Properties": {"PeriodType": "IQ_FY-15", "Metadatatag": "PeriodDate", "CurrencyID": "AUD"}},
+                {"Function": "GDSHE", "Identifier": company, "Mnemonic": "IQ_TOTAL_CL",             "Properties": {"PeriodType": "IQ_FY-15", "Metadatatag": "PeriodDate", "CurrencyID": filing_currency}},
                 # Total Accounts PAYABLE
-                {"Function": "GDSHE", "Identifier": company, "Mnemonic": "IQ_AP",             "Properties": {"PeriodType": "IQ_FY-15", "Metadatatag": "PeriodDate", "CurrencyID": "AUD"}},
+                {"Function": "GDSHE", "Identifier": company, "Mnemonic": "IQ_AP",             "Properties": {"PeriodType": "IQ_FY-15", "Metadatatag": "PeriodDate", "CurrencyID": filing_currency}},
                 # Total Accrued expenses
-                {"Function": "GDSHE", "Identifier": company, "Mnemonic": "IQ_AE",             "Properties": {"PeriodType": "IQ_FY-15", "Metadatatag": "PeriodDate", "CurrencyID": "AUD"}},
+                {"Function": "GDSHE", "Identifier": company, "Mnemonic": "IQ_AE",             "Properties": {"PeriodType": "IQ_FY-15", "Metadatatag": "PeriodDate", "CurrencyID": filing_currency}},
                 # Total Unearned Revenue
-                {"Function": "GDSHE", "Identifier": company, "Mnemonic": "IQ_UNEARN_REV_LT",             "Properties": {"PeriodType": "IQ_FY-15", "Metadatatag": "PeriodDate", "CurrencyID": "AUD"}},
+                {"Function": "GDSHE", "Identifier": company, "Mnemonic": "IQ_UNEARN_REV_LT",             "Properties": {"PeriodType": "IQ_FY-15", "Metadatatag": "PeriodDate", "CurrencyID": filing_currency}},
                 # Deferred Tax liability
-                {"Function": "GDSHE", "Identifier": company, "Mnemonic": "IQ_DEF_TAX_LIAB_LT",             "Properties": {"PeriodType": "IQ_FY-15", "Metadatatag": "PeriodDate", "CurrencyID": "AUD"}},
+                {"Function": "GDSHE", "Identifier": company, "Mnemonic": "IQ_DEF_TAX_LIAB_LT",             "Properties": {"PeriodType": "IQ_FY-15", "Metadatatag": "PeriodDate", "CurrencyID": filing_currency}},
                 # Research & Development
-                {"Function": "GDSHE", "Identifier": company, "Mnemonic": "IQ_RD_EXP",             "Properties": {"PeriodType": "IQ_FY-15", "Metadatatag": "PeriodDate", "CurrencyID": "AUD"}},
+                {"Function": "GDSHE", "Identifier": company, "Mnemonic": "IQ_RD_EXP",             "Properties": {"PeriodType": "IQ_FY-15", "Metadatatag": "PeriodDate", "CurrencyID": filing_currency}},
                 # Effective Tax rate
-                {"Function": "GDSHE", "Identifier": company, "Mnemonic": "IQ_EFFECT_TAX_RATE",             "Properties": {"PeriodType": "IQ_FY-15", "Metadatatag": "PeriodDate", "CurrencyID": "AUD"}},
+                {"Function": "GDSHE", "Identifier": company, "Mnemonic": "IQ_EFFECT_TAX_RATE",             "Properties": {"PeriodType": "IQ_FY-15", "Metadatatag": "PeriodDate", "CurrencyID": filing_currency}},
                 # Long-term debt
-                {"Function": "GDSHE", "Identifier": company, "Mnemonic": "IQ_LT_DEBT",             "Properties": {"PeriodType": "IQ_FY-15", "Metadatatag": "PeriodDate", "CurrencyID": "AUD"}},
+                {"Function": "GDSHE", "Identifier": company, "Mnemonic": "IQ_LT_DEBT",             "Properties": {"PeriodType": "IQ_FY-15", "Metadatatag": "PeriodDate", "CurrencyID": filing_currency}},
                 # Short-term Borrowings
-                {"Function": "GDSHE", "Identifier": company, "Mnemonic": "IQ_ST_DEBT",             "Properties": {"PeriodType": "IQ_FY-15", "Metadatatag": "PeriodDate", "CurrencyID": "AUD"}},
+                {"Function": "GDSHE", "Identifier": company, "Mnemonic": "IQ_ST_DEBT",             "Properties": {"PeriodType": "IQ_FY-15", "Metadatatag": "PeriodDate", "CurrencyID": filing_currency}},
                 # Common stock issued
-                {"function": "GDSHE", "identifier": company, "mnemonic": "IQ_COMMON_ISSUED",             "Properties": {"PeriodType": "IQ_FY-15", "Metadatatag": "PeriodDate", "CurrencyID": "AUD"}},
+                {"function": "GDSHE", "identifier": company, "mnemonic": "IQ_COMMON_ISSUED",             "Properties": {"PeriodType": "IQ_FY-15", "Metadatatag": "PeriodDate", "CurrencyID": filing_currency}},
                 # Common stock repurchased
-                {"function": "GDSHE", "identifier": company, "mnemonic": "IQ_COMMON_REP",             "Properties": {"PeriodType": "IQ_FY-15", "Metadatatag": "PeriodDate", "CurrencyID": "AUD"}},
+                {"function": "GDSHE", "identifier": company, "mnemonic": "IQ_COMMON_REP",             "Properties": {"PeriodType": "IQ_FY-15", "Metadatatag": "PeriodDate", "CurrencyID": filing_currency}},
                 # Total Debt
-                {"function": "GDSHE", "identifier": company, "mnemonic": "IQ_TOTAL_DEBT",             "Properties": {"PeriodType": "IQ_FY-15", "Metadatatag": "PeriodDate", "CurrencyID": "AUD"}},
+                {"function": "GDSHE", "identifier": company, "mnemonic": "IQ_TOTAL_DEBT",             "Properties": {"PeriodType": "IQ_FY-15", "Metadatatag": "PeriodDate", "CurrencyID": filing_currency}},
                 # Total Equity
-                {"function": "GDSHE", "identifier": company, "mnemonic": "IQ_TOTAL_EQUITY",             "Properties": {"PeriodType": "IQ_FY-15", "Metadatatag": "PeriodDate", "CurrencyID": "AUD"}},
+                {"function": "GDSHE", "identifier": company, "mnemonic": "IQ_TOTAL_EQUITY",             "Properties": {"PeriodType": "IQ_FY-15", "Metadatatag": "PeriodDate", "CurrencyID": filing_currency}},
                 # CAPEX
-                {"function": "GDSHE", "identifier": company, "mnemonic": "IQ_CAPEX",             "Properties": {"PeriodType": "IQ_FY-15", "Metadatatag": "PeriodDate", "CurrencyID": "AUD"}},
+                {"function": "GDSHE", "identifier": company, "mnemonic": "IQ_CAPEX",             "Properties": {"PeriodType": "IQ_FY-15", "Metadatatag": "PeriodDate", "CurrencyID": filing_currency}},
                 # Full-time employees
-                {"function": "GDSHE", "identifier": company, "mnemonic": "IQ_FULL_TIME",             "Properties": {"PeriodType": "IQ_FY-15", "Metadatatag": "PeriodDate", "CurrencyID": "AUD"}},
+                {"function": "GDSHE", "identifier": company, "mnemonic": "IQ_FULL_TIME",             "Properties": {"PeriodType": "IQ_FY-15", "Metadatatag": "PeriodDate", "CurrencyID": filing_currency}},
                 # Cash Acquisitions
-                {"function": "GDSHE", "identifier": company, "mnemonic": "IQ_CASH_ACQUIRE_CF",             "Properties": {"PeriodType": "IQ_FY-15", "Metadatatag": "PeriodDate", "CurrencyID": "AUD"}},
+                {"function": "GDSHE", "identifier": company, "mnemonic": "IQ_CASH_ACQUIRE_CF",             "Properties": {"PeriodType": "IQ_FY-15", "Metadatatag": "PeriodDate", "CurrencyID": filing_currency}},
                 # Gross Profit
-                {"function": "GDSHE", "identifier": company, "mnemonic": "IQ_GP",             "Properties": {"PeriodType": "IQ_FY-15", "Metadatatag": "PeriodDate", "CurrencyID": "AUD"}},
+                {"function": "GDSHE", "identifier": company, "mnemonic": "IQ_GP",             "Properties": {"PeriodType": "IQ_FY-15", "Metadatatag": "PeriodDate", "CurrencyID": filing_currency}},
             ]
 
             req = {"inputRequests": req_array}
@@ -481,14 +541,14 @@ for c in range(len(country_list)):
 
             # Write to CSV
             # Create the folder if it doesn't exist
-            os.makedirs(rf"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\global_platform_data\{country_import}", exist_ok=True)
+            os.makedirs(rf"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\global_platform_data_25\{country_import}", exist_ok=True)
             # Save the file
-            merged_df.to_csv(rf"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\global_platform_data\{country_import}\_" + company_label + ".csv")
+            merged_df.to_csv(rf"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\global_platform_data_25\{country_import}\_" + company_label + ".csv")
 
             # Now get Adjusted Close Price & save separately
             req_array = [
                 {"Function": "GDST", "Identifier": company, "Mnemonic": "IQ_CLOSEPRICE_ADJ",
-                 "properties": {"frequency": "Daily", "startDate": "02/13/2019", "endDate": "02/13/2025","CurrencyID": "USD"}}]
+                 "properties": {"frequency": "Daily", "startDate": "04/01/2019", "endDate": "04/01/2025","CurrencyID": trading_currency}}]
 
             req = {"inputRequests": req_array}
             response = requests.post(endpoint_url,
@@ -506,8 +566,8 @@ for c in range(len(country_list)):
             # Write prices to local directory
             price_df = pd.concat([dates, share_price_adjusted], axis=1)
             price_df.columns = ["Date", "Price"]
-            os.makedirs(rf"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\global_platform_data\share_price\{country_import}", exist_ok=True)
-            price_df.to_csv(rf"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\global_platform_data\share_price\{country_import}\_" + company_label +"_price.csv")
+            os.makedirs(rf"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\global_platform_data_25\share_price\{country_import}", exist_ok=True)
+            price_df.to_csv(rf"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\global_platform_data_25\share_price\{country_import}\_" + company_label +"_price.csv")
 
         except:
             print("Issue with ticker ", full_ticker_list[i])

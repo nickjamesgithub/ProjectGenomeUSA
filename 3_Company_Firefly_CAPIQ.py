@@ -8,12 +8,13 @@ matplotlib.use('TkAgg')
 
 # Import data
 data = pd.read_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\global_platform_data\Global_data.csv")
+excel_output = True
 
 # Full ticker list and corresponding start/end years
-full_ticker_list = ["ASX:CSL"]
-start_years = [2015]
+full_ticker_list = ["ASX:WBC"]
+start_years = [2019]
 end_years = [2024]
-plot_label = "CSL Limited"
+plot_label = "WBC"
 
 # Extract company names before looping
 company_name_list = [data.loc[data["Ticker_full"] == ticker, "Company_name"].iloc[0] for ticker in full_ticker_list]
@@ -95,5 +96,47 @@ plt.title(plot_label)
 plt.xlabel("Revenue growth (3 year moving average)")
 plt.ylabel("EVA Ratio")
 plt.legend()
-plt.savefig(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\casework\USA_technology\Firefly_plot_CAPIQ_" + plot_label)
+plt.savefig(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\casework\RHC\Firefly_plot_CAPIQ_" + plot_label)
 plt.show()
+
+if excel_output:
+    # Write elements to csv
+    # x_fill_df = pd.DataFrame(x_fill_list).transpose()
+    x_stacked_array = np.vstack(x_fill_list)
+    x_reshaped_array = x_stacked_array.reshape(-1, 1)
+    y_stacked_array = np.vstack(y_fill_list)
+    y_reshaped_array = y_stacked_array.reshape(-1, 1)
+    labels_stacked_array = np.vstack(labels_list)
+    labels_reshaped_array = labels_stacked_array.reshape(-1, 1)
+
+    # Convert arrays to 1D arrays
+    x_flat = x_reshaped_array.flatten()
+    y_flat = y_reshaped_array.flatten()
+    labels_flat = labels_reshaped_array.flatten()
+
+    # Write a function for the marker array
+    def create_marker_array(rows, cols):
+        marker_array = np.zeros((rows, cols), dtype=int)
+        for i in range(rows):
+            marker_array[i, :] = i + 1
+        return marker_array.reshape(-1, 1)
+
+
+    # Get dimensions of labels list for marker array
+    rows = len(labels_fill_list)
+    cols = len(labels_fill_list[0])
+
+    # Create the marker array
+    marker_array = create_marker_array(rows, cols).flatten()
+
+    # Create a DataFrame from the 1D arrays
+    df = pd.DataFrame({
+        'Series Labels': labels_flat,
+        'X': x_flat,
+        'Y': y_flat,
+        'Marker and regression grouping': marker_array
+    })
+
+    # Write the DataFrame to a CSV file
+    df.to_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\casework\RHC\_" + plot_label + "_firefly_projected_data_.csv", index=False)
+

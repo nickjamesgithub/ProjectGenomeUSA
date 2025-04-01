@@ -121,7 +121,7 @@ if run_defined_trajectory:
     df_full = pd.read_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\global_platform_data\Global_data.csv")
 
     # Parameters
-    time_window_length = 5  # Define the time window length
+    time_window_length = 4  # Define the time window length
     country_list = ["USA", 'AUS', 'INDIA', 'JAPAN', 'EURO', 'UK']
     unique_sectors = ["Banking"] #  df_full["Sector"].unique()
 
@@ -132,11 +132,10 @@ if run_defined_trajectory:
     # Example format: {year_offset: [possible_genomes]}
     # year_offset is 0 for the first year in the sequence, 1 for the second, etc.
     genome_options = {
-        0: ["VIRTUOUS", "FAMOUS", "LEGENDARY"],
-        1: ["VIRTUOUS", "FAMOUS", "LEGENDARY"],
-        2: ["VIRTUOUS", "FAMOUS", "LEGENDARY"],
-        3: ["VIRTUOUS", "FAMOUS", "LEGENDARY"],
-        4: ["VIRTUOUS", "FAMOUS", "LEGENDARY"]
+        0: ["FAMOUS", "FAMOUS", "FAMOUS"],
+        1: ["TRAPPED", "BRAVE", "FEARLESS"],
+        2: ["VIRTUOUS", "FAMOUS", "FAMOUS"],
+        3: ["VIRTUOUS", "FAMOUS", "FAMOUS"]
     }
 
     # Function to check if the sequence in the DataFrame matches any of the allowed sequences

@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 from sklearn.linear_model import LinearRegression
 matplotlib.use('TkAgg')
 
-make_plots = True
+make_plots = False
 
 # Load the main data
 df_full = pd.read_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\global_platform_data\Global_data.csv")
@@ -30,7 +30,7 @@ inflation_data_melted['Country'] = inflation_data_melted['Country'].map(country_
 df_full = pd.merge(df_full, inflation_data_melted, how='left', on=['Year', 'Country'])
 
 # Filter data for the required years
-start_year = 2014
+start_year = 2015
 end_year = 2024
 df = df_full[(df_full['Year'] >= start_year) & (df_full['Year'] <= end_year)]
 
@@ -56,7 +56,7 @@ for company, count in criteria_count.items():
 
 # Convert dictionary into a DataFrame for display
 svc_summary = pd.DataFrame(dict([(k, pd.Series(v)) for k, v in svc_summary_dict.items()])).fillna('')
-svc_summary.columns = ["SVC_0", "SVC_1", "SVC_2", "SVC_3", "SVC_4", "SVC_5", "SVC_6", "SVC_7", "SVC_8", "SVC_9", "SVC_10", "SVC_11"]
+svc_summary.columns = ["SVC_0", "SVC_1", "SVC_2", "SVC_3", "SVC_4", "SVC_5", "SVC_6", "SVC_7", "SVC_8", "SVC_9", "SVC_10"]
 print(svc_summary)
 
 # Write out to local file
@@ -91,7 +91,7 @@ ev_ebitda_summary.to_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome
 
 if make_plots:
     # Plot SVC vs Median PBV
-    plt.plot(pbv_summary["SVC_Category"][:-1], pbv_summary["Median_PBV"][:-1])
+    plt.plot(pbv_summary["SVC_Category"], pbv_summary["Median_PBV"])
     plt.ylabel("Average P:BV")
     plt.xlabel("SVC Years")
     plt.title("SVC Criteria met vs P:BV")
@@ -111,64 +111,135 @@ if make_plots:
     plt.title("SVC Criteria met vs EV:EBIT")
     plt.show()
 
-# quick fix
-df_filtered = df
-
 import numpy as np
 import pandas as pd
-import statsmodels.api as sm
 
-# Sector metric mapping
-sector_metric_mapping = {
-    "Banking": "PE",
-    "Investment and Wealth": "PE",
-    "Insurance": "PE",
-    "Financials - other": "PE"
-}
+# Initialize dictionary to store median and mean TSR values for each SVC category
+tsrs_medians = {}
+tsrs_means = {}
+tsrs_counts = {}
 
-# Initialize results list
-results = []
+# Number of years in the period
+n = 2024 - 2015  # Adjusted for the given timeframe
 
-# Loop over each company
-for company in df_filtered['Company_name'].unique():
-    try:
-        company_data = df_filtered[df_filtered['Company_name'] == company]
-        sector = company_data['Sector'].iloc[0]
-        country = company_data['Country'].iloc[0]
+# Loop over columns in svc_summary
+for column in svc_summary.columns:
+    # Get the list of companies for the current SVC category
+    companies = svc_summary[column].dropna().tolist()
 
-        # Skip companies with negative EBITDA or Enterprise_Value
-        if (company_data[['EBITDA', 'Enterprise_Value']] <= 0).any().any():
-            continue
+    # Filter df_full for these companies in 2015 and 2024
+    df_2015 = df_full[(df_full["Year"] == 2015) & (df_full["Company_name"].isin(companies))]
+    df_2024 = df_full[(df_full["Year"] == 2024) & (df_full["Company_name"].isin(companies))]
 
-        # Determine metric for regression
-        metric = sector_metric_mapping.get(sector, "PBV")
+    # Merge to ensure we have both years for each company
+    df_tsr = df_2015[['Company_name', 'Adjusted_Stock_Price']].merge(
+        df_2024[['Company_name', 'Adjusted_Stock_Price']],
+        on='Company_name',
+        suffixes=('_2015', '_2024')
+    )
 
-        # Filter data for 2014-2024
-        company_data = company_data[(company_data['Year'] >= 2014) & (company_data['Year'] <= 2024)]
+    # Compute TSR for each company
+    df_tsr['TSR'] = (df_tsr['Adjusted_Stock_Price_2024'] / df_tsr['Adjusted_Stock_Price_2015']) ** (1 / n) - 1
 
-        # Fit regression on selected metric
-        if not company_data[['Year', metric]].dropna().empty:
-            X = sm.add_constant(company_data['Year'])
-            y = company_data[metric]
-            model = sm.OLS(y, X, missing='drop').fit()
-            regression_coef = model.params['Year']
-        else:
-            continue
+    # Store median, mean TSR, and count for this SVC category
+    tsrs_medians[column] = df_tsr['TSR'].median()
+    tsrs_means[column] = df_tsr['TSR'].mean()
+    tsrs_counts[column] = len(df_tsr)
 
-        # Calculate means
-        avg_revenue_growth = company_data['Revenue_growth_3_f'].mean()
-        avg_eva_ratio = company_data['EVA_ratio_bespoke'].mean()
-        average_tsr = company_data['TSR_CIQ_no_buybacks'].mean()
+# Convert the results dictionary to a DataFrame
+tsrs_summary = pd.DataFrame({
+    'SVC_Category': tsrs_medians.keys(),
+    'Median_TSR': tsrs_medians.values(),
+    'N': tsrs_counts.values()
+})
 
-        # Store results
-        results.append([company, sector, country, regression_coef, avg_revenue_growth, avg_eva_ratio, average_tsr])
+# Function to safely compute median and mean, handling NaN and Inf
+def safe_median(series):
+    return np.median(series.replace([np.inf, -np.inf], np.nan).dropna())
 
-    except Exception as e:
-        print(f"Error processing company {company}: {e}")
-        continue
+def safe_mean(series):
+    return np.mean(series.replace([np.inf, -np.inf], np.nan).dropna())
 
-# Convert results to DataFrame
-results_df = pd.DataFrame(results, columns=['Company_name', 'Sector', 'Country', 'Regression_Coefficient', 'Avg_Revenue_Growth',
-                                            'Avg_EVA_Ratio', 'Average_TSR'])
+# Compute statistics for SVC categories 0 to 7
+median_tsr_0_to_7 = safe_median(tsrs_summary.loc[tsrs_summary['SVC_Category'].isin(['SVC_0', 'SVC_1', 'SVC_2', 'SVC_3', 'SVC_4', 'SVC_5', 'SVC_6', 'SVC_7']), 'Median_TSR'])
+mean_tsr_0_to_7 = safe_mean(tsrs_summary.loc[tsrs_summary['SVC_Category'].isin(['SVC_0', 'SVC_1', 'SVC_2', 'SVC_3', 'SVC_4', 'SVC_5', 'SVC_6', 'SVC_7']), 'Median_TSR'])
+median_pbv_0_to_7 = safe_median(pbv_summary.loc[pbv_summary['SVC_Category'].isin(['SVC_0', 'SVC_1', 'SVC_2', 'SVC_3', 'SVC_4', 'SVC_5', 'SVC_6', 'SVC_7']), 'Median_PBV'])
+mean_pbv_0_to_7 = safe_mean(pbv_summary.loc[pbv_summary['SVC_Category'].isin(['SVC_0', 'SVC_1', 'SVC_2', 'SVC_3', 'SVC_4', 'SVC_5', 'SVC_6', 'SVC_7']), 'Median_PBV'])
 
-results_df.to_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\Regression_Results.csv")
+# Compute statistics for SVC categories 8 to 10
+median_tsr_8_to_10 = safe_median(tsrs_summary.loc[tsrs_summary['SVC_Category'].isin(['SVC_8', 'SVC_9', 'SVC_10']), 'Median_TSR'])
+mean_tsr_8_to_10 = safe_mean(tsrs_summary.loc[tsrs_summary['SVC_Category'].isin(['SVC_8', 'SVC_9', 'SVC_10']), 'Median_TSR'])
+median_pbv_8_to_10 = safe_median(pbv_summary.loc[pbv_summary['SVC_Category'].isin(['SVC_8', 'SVC_9', 'SVC_10']), 'Median_PBV'])
+mean_pbv_8_to_10 = safe_mean(pbv_summary.loc[pbv_summary['SVC_Category'].isin(['SVC_8', 'SVC_9', 'SVC_10']), 'Median_PBV'])
+
+# Display results
+tsr_summary = pd.DataFrame({
+    'Group': ['SVC_0-7', 'SVC_8-10'],
+    'Median_TSR': [median_tsr_0_to_7, median_tsr_8_to_10],
+    'Mean_TSR': [mean_tsr_0_to_7, mean_tsr_8_to_10],
+    'Median_PBV': [median_pbv_0_to_7, median_pbv_8_to_10],
+    'Mean_PBV': [mean_pbv_0_to_7, mean_pbv_8_to_10]
+})
+
+
+# # quick fix
+# df_filtered = df
+#
+# import numpy as np
+# import pandas as pd
+# import statsmodels.api as sm
+#
+# # Sector metric mapping
+# sector_metric_mapping = {
+#     "Banking": "PE",
+#     "Investment and Wealth": "PE",
+#     "Insurance": "PE",
+#     "Financials - other": "PE"
+# }
+#
+# # Initialize results list
+# results = []
+#
+# # Loop over each company
+# for company in df_filtered['Company_name'].unique():
+#     try:
+#         company_data = df_filtered[df_filtered['Company_name'] == company]
+#         sector = company_data['Sector'].iloc[0]
+#         country = company_data['Country'].iloc[0]
+#
+#         # Skip companies with negative EBITDA or Enterprise_Value
+#         if (company_data[['EBITDA', 'Enterprise_Value']] <= 0).any().any():
+#             continue
+#
+#         # Determine metric for regression
+#         metric = sector_metric_mapping.get(sector, "PBV")
+#
+#         # Filter data for 2014-2024
+#         company_data = company_data[(company_data['Year'] >= 2014) & (company_data['Year'] <= 2024)]
+#
+#         # Fit regression on selected metric
+#         if not company_data[['Year', metric]].dropna().empty:
+#             X = sm.add_constant(company_data['Year'])
+#             y = company_data[metric]
+#             model = sm.OLS(y, X, missing='drop').fit()
+#             regression_coef = model.params['Year']
+#         else:
+#             continue
+#
+#         # Calculate means
+#         avg_revenue_growth = company_data['Revenue_growth_3_f'].mean()
+#         avg_eva_ratio = company_data['EVA_ratio_bespoke'].mean()
+#         average_tsr = company_data['TSR_CIQ_no_buybacks'].mean()
+#
+#         # Store results
+#         results.append([company, sector, country, regression_coef, avg_revenue_growth, avg_eva_ratio, average_tsr])
+#
+#     except Exception as e:
+#         print(f"Error processing company {company}: {e}")
+#         continue
+#
+# # Convert results to DataFrame
+# results_df = pd.DataFrame(results, columns=['Company_name', 'Sector', 'Country', 'Regression_Coefficient', 'Avg_Revenue_Growth',
+#                                             'Avg_EVA_Ratio', 'Average_TSR'])
+#
+# results_df.to_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\Regression_Results.csv")
