@@ -11,10 +11,10 @@ data = pd.read_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\globa
 excel_output = True
 
 # Full ticker list and corresponding start/end years
-full_ticker_list = ["ASX:WBC"]
+full_ticker_list = ["ASX:SHC"]
 start_years = [2019]
 end_years = [2024]
-plot_label = "WBC"
+plot_label = "Sonic"
 
 # Extract company names before looping
 company_name_list = [data.loc[data["Ticker_full"] == ticker, "Company_name"].iloc[0] for ticker in full_ticker_list]

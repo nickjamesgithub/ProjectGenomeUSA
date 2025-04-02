@@ -10,12 +10,17 @@ from scipy.stats import gaussian_kde
 import math
 
 # Read the data
-df_full = pd.read_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\Journeys_summary_fashion_filtered.csv")
+df_full = pd.read_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\Journeys_summary_Global_filtered_25_moin.csv")
 
 # Desired sectors and date range
-country_list = [ "USA", 'AUS', 'INDIA', 'JAPAN', 'EURO', 'UK'] # "USA", 'AUS', 'INDIA', 'JAPAN', 'EURO', 'UK'
-unique_sectors = ["Healthcare"]
-# unique_sectors = df_full["Sector"].unique()
+country_list = [
+    "AUSTRALIA", "BELGIUM", "CANADA", "CHILE", "CHINA", "DENMARK", "FRANCE", "GERMANY", "HONG KONG", "INDIA", "ITALY",
+    "JAPAN", "LUXEMBOURG", "MALAYSIA",
+    "NETHERLANDS", "PHILIPPINES", "SAUDI ARABIA", "SINGAPORE", "SOUTH KOREA", "SWEDEN", "SWITZERLAND", "THAILAND",
+    "UAE", "UNITED KINGDOM", "USA"
+] # "USA", 'AUS', 'INDIA', 'JAPAN', 'EURO', 'UK'
+# unique_sectors = ["Healthcare"]
+unique_sectors = df_full["Sector"].unique()
 desired_sectors = unique_sectors
 
 # 1. Filter by Country & Sector
@@ -65,8 +70,6 @@ for i in range(len(genome_class_unique)):
 results_df = pd.DataFrame(results_list)
 results_df.columns = ["Genome_class", "N", "Annualized_TSR", "Standard_deviation_TSR", "Minimum_TSR", "Maximum_TSR", "Normalized_TSR", "Price_to_book"]
 
-x=1
-y=2
 # results_df.to_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\Global_Genome_grid_output.csv")
 
 

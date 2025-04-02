@@ -12,7 +12,7 @@ import os  # Ensure this is imported at the top
 # country_list = ["AUSTRALIA", "BELGIUM", "CANADA", "CHILE", "CHINA", "DENMARK", "FRANCE", "GERMANY", "HONG KONG", "INDIA", "ITALY", "JAPAN",
 #     "LUXEMBOURG", "MALAYSIA", "NETHERLANDS", "PHILIPPINES", "SAUDI ARABIA", "SINGAPORE", "SOUTH KOREA", "SWEDEN", "SWITZERLAND", "THAILAND", "UAE", "UNITED KINGDOM", "USA"]
 
-country_list = ["CHINA"]
+country_list = ["AUSTRALIA"]
 
 # Define the base directory where you want to save the files
 base_directory = r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\Global_platform_data_25"
