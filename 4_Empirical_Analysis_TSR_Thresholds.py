@@ -9,17 +9,17 @@ import seaborn as sns
 matplotlib.use('TkAgg')
 
 # Read the data
-df = pd.read_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\global_platform_data\Global_data.csv")
+df = pd.read_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\Global_platform_data_25\Global_data_25.csv")
 
 # Apply Genome Filter
 genome_filtering = False
-plot_label = "Global"
+plot_label = "Global equities"
 
 # Desired sectors and date range
-country_list = ["USA"] # "USA", 'AUS', 'INDIA', 'JAPAN', 'EURO', 'UK'
+country_list = df["Country"].unique() # ["USA"] # "USA", 'AUS', 'INDIA', 'JAPAN', 'EURO', 'UK'
 unique_sectors = df["Sector"].unique()
 desired_sectors = unique_sectors
-start_year = 2021
+start_year = 2015
 end_year = 2024
 tsr_method = "capital_iq" # bain or capital_iq
 make_plots = True
@@ -145,7 +145,7 @@ plt.legend()
 # Add labels and title
 plt.xlabel("Annualized TSR")
 plt.ylabel("Company ranking")
-plt.title(plot_label + "_" + str(start_year) + "-" + str(end_year))
+plt.title(plot_label + " " + str(start_year) + "-" + str(end_year))
 # Show plot
 plt.savefig(plot_label + "_" + str(start_year) + "-" + str(end_year))
 plt.show()

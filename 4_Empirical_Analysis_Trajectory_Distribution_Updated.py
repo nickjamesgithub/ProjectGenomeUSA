@@ -333,7 +333,7 @@ df_journey_collapsed["X_change"] = df_journey_collapsed["Revenue_growth_end"] - 
 df_journey_collapsed["Y_change"] = df_journey_collapsed["EVA_end"] - df_journey_collapsed["EVA_beginning"]
 
 # Write out csv file locally
-df_journey_collapsed.to_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\Journeys_summary_Global_25_moin.csv")
+df_journey_collapsed.to_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\Journeys_summary_Global_25.csv")
 
 if genome_filtering:
     df_journey_collapsed = df_journey_collapsed.loc[(df_journey_collapsed["EVA_end"] >= -0.3) & (df_journey_collapsed["EVA_end"] <= 0.5) &
@@ -342,7 +342,7 @@ if genome_filtering:
                                      (df_journey_collapsed["Price_to_book"] > -200)]
 
 # Write out csv file locally
-df_journey_collapsed.to_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\Journeys_summary_Global_filtered_25_moin.csv")
+df_journey_collapsed.to_csv(r"C:\Users\60848\OneDrive - Bain\Desktop\Project_Genome\Journeys_summary_Global_filtered_25.csv")
 
 # Filter out infinite and NaN values before plotting
 df_journey_collapsed = df_journey_collapsed.replace([np.inf, -np.inf], np.nan)

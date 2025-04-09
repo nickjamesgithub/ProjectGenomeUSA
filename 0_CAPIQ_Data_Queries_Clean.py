@@ -206,7 +206,7 @@ for c in range(len(country_list)):
             response = requests.post(endpoint_url,
                                      headers={'Content-Type': 'application/json'},
                                      data=json.dumps(req),
-                                     auth=HTTPBasicAuth("apiadmin@bain.com", "Bain@1234"),
+                                     auth=HTTPBasicAuth("apiadmin_backup@bain.com", "Bain@1234!"),
                                      verify=True)
             print(response)
 
