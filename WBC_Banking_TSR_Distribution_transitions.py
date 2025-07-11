@@ -10,7 +10,7 @@ df_banking = df[df["Sector"] == "Banking"]
 
 # Step 2: Restrict analysis to specific countries
 included_countries = [
-    "Australia", "Denmark", "Hong_Kong", "Italy", "Malaysia", "Netherlands",
+    "Australia", "Denmark", "Hong_Kong", "India", "Malaysia", "Netherlands",
     "Singapore", "Sweden", "Switzerland", "Thailand", "USA", "United_Kingdom"
 ]
 df_banking = df_banking[df_banking["Country"].isin(included_countries)]
